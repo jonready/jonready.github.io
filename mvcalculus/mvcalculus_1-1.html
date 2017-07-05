@@ -3,8 +3,8 @@
   <head>
     <title>The Dot Product</title>
       <link href="https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic" rel="stylesheet" type="text/css">
-      <link rel="stylesheet" type="text/css" href="/styles.css">
-      <link rel="icon" type="image/png" href="/img/favicon.ico"/>
+      <link rel="stylesheet" type="text/css" href="../styles.css">
+      <link rel="icon" type="image/png" href="../img/favicon.ico"/>
       <script>
       var constants = {
         canvasWidth: 600, // In pixels.
@@ -143,7 +143,7 @@
 
         canvasElement.getContext('2d').translate(constants.canvasWidth/2, constants.canvasHeight/2); // Translate the surface's origin to the center of the canvas.
 
-        document.body.appendChild(canvasElement); // Make the canvas element a child of the body element.
+        document.getElementById("header").appendChild(canvasElement); // Make the canvas element a child of the body element.
       }
 
       //------------------------------------------------------------------------------------------------------
@@ -369,11 +369,13 @@
     </div>
 
     <div style="width:100%;min-height:60vw">
-    <h1>Multi-variable calculus</h1>
-    <h2>The Dot Product</h2>
+      <div id="header">
+        <h1>Multi-variable calculus</h1>
+        <h2>The Dot Product</h2>
+      </div>
     <div style="height:0.2em;width:40%;background-color:#ffffff;margin:auto;margin-bottom:5%;">
     </div>
-    <div id="definitions" class="sections">
+    <div id="definition" class="sections">
       <h1>Definition</h1>
         <div>
           <div class="about_text">
