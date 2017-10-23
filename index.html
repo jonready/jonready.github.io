@@ -83,222 +83,29 @@
             <tr>
             <td colspan="2">
               <h4><i>Volvo Group Trucking Technologies</i> &#45 Gothenburg, Sweden</h4>
-              <p>Investigated modularization of soft</p>
-              <p>Verified system integrity under various extreme conditions</p>
-              <p>Validated electrical, optical and thermal specifications</p>
+              <p>I spent fall 2017 at Volvo Group in Trucks Technology in Gothenburg, Sweden. Learning about how companies modularize parts and software to reduce internal costs as well as how to streamline production of future electric and autonomous trucks.</p>
             </td>
           </tr>
           <tr><td><br></td></tr>
           <tr>
-            <td><h3>Summer Undergraduate Research in Engineering</h3></td>
-            <td><h4 syle="text-align:right;">May 2015 &#45 Aug 2015</h4></td>
+            <td><h3>Sofware engineering Co-Op</h3></td>
+            <td><h4 style="text-align:right;">May 2015 &#45 Aug 2015</h4></td>
             </tr>
             <tr>
               <td colspan="2">
-                <h4><i>McGill University Electrical Engineering Department</i> &#45 Montreal, Quebec</h4>
-                <p>Interfaced Bluetooth LE with wearable haptics</p>
-                <p>Circuit analysis and data acquisition</p>
-                <p>Designed and tested PCB interface for wearable haptics</p>
+                <h4><i>BAE Systems</i> &#45 Nashua, New Hampshire</h4>
+                <p>I joined BAE Systems as the only Co-Op student in electronic combat solutions software engineering. I worked independently and in groups to design and implement tools used on customer deliverables.</p>
               </td>
             </tr>
         </table>
       </div>
     </div>
-
-    <div id="pcbs" class="sections">
-      <h1>PCBs</h1>
-      <div class="pcb" style="text-align:left;">
-            <h4>Isoduino MEGA</h4>
-
-            <div style="float:right;text-align:center;width:auto;height:auto;margin-left:5%">
-              <img src="images/isoduino.png" style="width:30vh;height:auto"/>
-              <br>
-              <button onclick="document.getElementById('modal_box').style.display='block'; init('models/isoduino.dae');">Load 3D Model</button>
-            </div>
-
-            <p> Isduino MEGA is an Arduino MEGA clone with added functionality,
-            notably the ability to isolated the USB communication
-            between the computer and the microcontroller, hence the name.</p>
-
-            <p>The Isoduino MEGA is compatible with the Arduino eco-system
-            and allow the computer to be shield from the noisy component
-            such as motors or relays.</p>
-            <p>Features:<p/>
-            <ul>
-              <li>Isolated UART to protect computer from motor noise.</li>
-              <li>Switching regulator to allow bigger range of voltage input.</li>
-              <li>Extra IO pins where broken out.</li>
-              <li>User cofigurable jumper to bypass isolation.</li>
-              <li>Automatic and dynamic voltage sourcce selection in Bypass Mode.</li>
-              <li>Voltage divider to allow input voltage sensing.</li>
-              <li>Extra user LED.</li>
-            </ul>
-
-            <br>
-
-            <h4>Ground Station Gimbal</h4>
-
-            <div style="float:right;text-align:center;width:auto;height:auto;margin-left:5%">
-              <img src="images/gs_gimbal.png" style="width:30vh;height:auto"/>
-              <br>
-              <button onclick="document.getElementById('modal_box').style.display='block'; init('models/gs_gimbal.dae');">Load 3D Model</button>
-            </div>
-
-            <p>The ground station gimbal has 1-degree of freedom to allow the atenna to be pointed toward a fixed-wing aircraft.</p>
-            <p>PCB is a Raspberry Pi HAT and allow the Raspbery Pi to communicate and control various devices on-board via I2C bus.</p>
-            <p>Features:</p>
-            <ul>
-              <li>9-axes imu (MPU9250) for orientation and absolute heading.</li>
-              <li>GPS (FGPMMOPA6C) for absolute location.</li>
-              <li>PWM controller (PCA9633) to generate motor control signals.</li>
-              <li>5V buck convertor (TPS54302) to back power RPi with 3A max output.</li>
-              <li>Three-phase motor driver (L6234) for driving the motor.</li>
-              <li>Real time clock (DS3231M) for time keeping.</li>
-              <li>Current sensor (INA219) to monitor total current consumption and input voltage.</li>
-            </ul>
-
-            <br>
-
-            <h4>Battery Indicator</h4>
-
-            <div style="float:right;text-align:center;width:auto;height:auto;margin-left:5%">
-              <img src="images/battery_monitor.png" style="width:30vh;height:auto"/>
-              <br>
-              <button onclick="document.getElementById('modal_box').style.display='block'; init('models/battery_monitor.dae');">Load 3D Model</button>
-            </div>
-
-            <p>A simple battery indicator to monitor the battery level.</p>
-            <p>With a user press of botton, the battery remained is brightly displayed.</p>
-            <p>Features:</p>
-            <ul>
-              <li>Voltage regulator allowing sensing up 35V.</li>
-              <li> ATtiny45 microcontroller with 98% flash usage.</li>
-              <li>Six WS2812B tri-color addressable LEDs.</li>
-              <li>Exponential filter to smooth out voltage read.</li>
-            </ul>
-            <script src="three.js/build/three.js"></script>
-            <script src="three.js/examples/js/controls/OrbitControls.js"></script>
-            <script src="three.js/examples/js/loaders/ColladaLoader.js"></script>
-            <script>
-              var container, control;
-              var camera, scene, renderer, model;
-              var cross;
-              var initialized = false;
-              var current_model;
-              var loader = new THREE.ColladaLoader();
-
-              function init(url) {
-                if (!initialized){
-                  initialized = true;
-                  container = document.getElementById('model_box');
-
-                  renderer = new THREE.WebGLRenderer();
-                  renderer.setSize(container.offsetWidth * 0.95, container.offsetHeight * 0.95);
-                  renderer.setPixelRatio( window.devicePixelRatio );
-                  scene = new THREE.Scene();
-                  scene.background = new THREE.Color( 0xeeeeee );
-                  camera = new THREE.PerspectiveCamera(60, container.offsetWidth / container.offsetHeight, 1, 10000);
-
-                  camera.position.set(0, 5, 2.5).setLength(20);
-                  controls = new THREE.OrbitControls(camera, renderer.domElement);
-                  controls.enablePan = false;
-                  controls.autoRotate = true;
-                  var plane = new THREE.GridHelper(100, 10);
-
-                  var light = new THREE.PointLight(0xfffff2, 0.1);
-                  scene.add( light );
-                  var light_amb = new THREE.AmbientLight( 0x404040, 4 ); // soft white light
-                  scene.add( light_amb );
-                  light.position.set(0, 1, 1.5);
-                  camera.add(light);
-                  scene.add(camera);
-                  var gridHelper = new THREE.GridHelper(50, 10);
-                  scene.add( gridHelper );
-                  container.appendChild(renderer.domElement);
-                  window.addEventListener( 'resize', onWindowResize, false );
-                  animate();
-                }
-                if (url != current_model) {
-                  current_model = url;
-                  if (model) {
-                    scene.remove(model.scene);
-                  }
-                  loader.load(url, function (cae) {
-                          model = cae;
-                          cae.scene.scale.set(18, 18, 18);
-                          scene.add(model.scene);
-                    },
-                    function (callback){
-                      var percent = Math.round(callback.loaded / callback.total * 100);
-                    }
-                  );
-                }
-              }
-              function onWindowResize() {
-                camera.aspect = container.offsetWidth / container.offsetHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize( container.offsetWidth, container.offsetHeight );
-              }
-
-             function animate() {
-                controls.update();
-                requestAnimationFrame( animate );
-                renderer.render( scene, camera );
-              }
-            </script>
-      </div>
-    </div>
-
-    <div id="origami" class="sections">
-      <h1>Origami</h1>
-      <div>
-        <h4>Bei is a veteran origami folder, Bei enjoys folding complex and life-like design that requires hundreds of steps and several hours to complete.</h4>
-        <h4>Here are some of his works:</h4>
-        <br>
-        <div style="width=100%;margin:auto;">
-          <img class="mySlides" src="images/1.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/2.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/3.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/4.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/5.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/6.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/7.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/8.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/9.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/10.jpg" style="width:95%;margin:auto;">
-          <img class="mySlides" src="images/11.jpg" style="width:95%;margin:auto;">
-
-          <button class="button" style="top:50%;left:0;" onclick="plusDivs(-1)">&#10094;</button>
-          <button class="button" style="top:50%;right:0;"onclick="plusDivs(1)">&#10095;</button>
-        </div>
-        <script>
-        var slideIndex = 1;
-        showDivs(slideIndex);
-
-        function plusDivs(n) {
-            showDivs(slideIndex += n);
-        }
-
-        function showDivs(n) {
-          var i;
-          var x = document.getElementsByClassName("mySlides");
-          if (n > x.length) {slideIndex = 1}
-            if (n < 1) {slideIndex = x.length}
-            for (i = 0; i < x.length; i++) {
-              x[i].style.display = "none";
-            }
-            x[slideIndex-1].style.display = "block";
-        }
-        </script>
-      </div>
-    </div>
-
-
+      
     <div id="contact" class="sections">
       <h1>Contact</h1>
       <div>
-        <p>Bei can be reached by <a href="mailto:bei.liu@mail.mcgill.ca">E-mail</a> or
-        via <a href="https://www.linkedin.com/in/beichenliu/">LinkedIn.</a></p>
+        <p>Jonathon can be reached by <a href="mailto:jxr984@gmail.com">E-mail</a> or
+        via <a href="https://www.linkedin.com/in/jonready/">LinkedIn.</a></p>
       </div>
     </div>
     <div class="sections" style="height:10vh"></div>
