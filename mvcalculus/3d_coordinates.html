@@ -17,9 +17,8 @@
         xMax: 9,
         yMin: -9,
         yMax: 9,
-        xDelta: 0.2, // Make smaller for more surface points.
-        yDelta: 0.2, // Make smaller for more surface points.
-        colorMap: ["#060", "#090", "#0C0", "#0F0", "#9F0", "#9C0", "#990", "#960", "#930", "#900", "#C00"], // There are eleven possible "vertical" color values for the surface, based on the last row of http://www.cs.siena.edu/~lederman/truck/AdvanceDesignTrucks/html_color_chart.gif
+        xDelta: 0.1, // Make smaller for more surface points.
+        yDelta: 0.1, // Make smaller for more surface points.
         pointWidth: 2, // The size of a rendered surface point (i.e., rectangle width and height) in pixels.
         dTheta: 0.05, // The angle delta, in radians, by which to rotate the surface per key press.
         surfaceScale: 24 // An empirically derived constant that makes the surface a good size for the given canvas size.
@@ -64,7 +63,7 @@
       {
         var d = Math.sqrt(x*x + y*y); // The distance d of the xy-point from the z-axis.
 
-        return 4*(Math.sin(d) / d); // Return the z-coordinate for the point (x, y, z).
+        return 4*(Math.cos(d) / d); // Return the z-coordinate for the point (x, y, z).
       }
 
       // -----------------------------------------------------------------------------------------------------
@@ -88,45 +87,6 @@
 
       // -----------------------------------------------------------------------------------------------------
 
-      Surface.prototype.color = function()
-      /*
-        The color of a surface point is a function of its z-coordinate height.
-      */
-      {
-        var z; // The z-coordinate for a given surface point (x, y, z).
-
-        this.zMin = this.zMax = this.points[0][Z]; // A starting value. Note that zMin and zMax are custom properties that could possibly be useful if this code is extended later.
-        for (var i = 0; i < this.points.length; i++)
-        {
-          z = this.points[i][Z];
-          if (z < this.zMin) { this.zMin = z; }
-          if (z > this.zMax) { this.zMax = z; }
-        }
-
-        var zDelta = Math.abs(this.zMax - this.zMin) / constants.colorMap.length;
-
-        for (var i = 0; i < this.points.length; i++)
-        {
-          this.points[i].color = constants.colorMap[ Math.floor( (this.points[i][Z]-this.zMin)/zDelta ) ];
-        }
-
-        /* Note that the prior FOR loop is functionally equivalent to the follow (much less elegant) loop:
-        for (var i = 0; i < this.points.length; i++)
-        {
-          if (this.points[i][Z] <= this.zMin + zDelta) {this.points[i].color = "#060";}
-          else if (this.points[i][Z] <= this.zMin + 2*zDelta) {this.points[i].color = "#090";}
-          else if (this.points[i][Z] <= this.zMin + 3*zDelta) {this.points[i].color = "#0C0";}
-          else if (this.points[i][Z] <= this.zMin + 4*zDelta) {this.points[i].color = "#0F0";}
-          else if (this.points[i][Z] <= this.zMin + 5*zDelta) {this.points[i].color = "#9F0";}
-          else if (this.points[i][Z] <= this.zMin + 6*zDelta) {this.points[i].color = "#9C0";}
-          else if (this.points[i][Z] <= this.zMin + 7*zDelta) {this.points[i].color = "#990";}
-          else if (this.points[i][Z] <= this.zMin + 8*zDelta) {this.points[i].color = "#960";}
-          else if (this.points[i][Z] <= this.zMin + 9*zDelta) {this.points[i].color = "#930";}
-          else if (this.points[i][Z] <= this.zMin + 10*zDelta) {this.points[i].color = "#900";}
-          else {this.points[i].color = "#C00";}
-        }
-        */
-      }
 
       // -----------------------------------------------------------------------------------------------------
 
@@ -164,9 +124,13 @@
 
         for (var i = 0; i < this.points.length; i++)
         {
-          ctx.fillStyle = this.points[i].color;
+          ctx.fillStyle = this.points[i].green;
           ctx.fillRect(this.points[i][X] * constants.surfaceScale, this.points[i][Y] * constants.surfaceScale, constants.pointWidth, constants.pointWidth);
         }
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(300, 300);
+        ctx.stroke();
       }
 
       // -----------------------------------------------------------------------------------------------------
@@ -348,7 +312,6 @@
       // -----------------------------------------------------------------------------------------------------
 
       surface.generate(); // Creates the set of points reprsenting the surface. Must be called before color().
-      surface.color(); // Based on the min and max z-coordinate values, chooses colors for each point based on the point's z-ccordinate value (i.e., height).
       window.addEventListener('load', onloadInit, false); // Perform processing that must occur after the page has fully loaded.
     </script>
   </head>
@@ -356,8 +319,9 @@
   <body>
     <div id="navbar">
       <ul class="navbar">
-        <li><a href="#definition">Definition</a></li>
-        <li><a href="#applications">Applications</a></li>
+        <li><a href="#distance">Distance Formula</a></li>
+        <li><a href="#circle">Circle</a></li>
+        <li><a href="#sphere">Sphere</a></li>
       </ul>
     </div>
     <div class="modal" id="modal_box">
@@ -371,39 +335,58 @@
     <div style="width:100%;min-height:60vw">
       <div id="header">
         <h1>Multi-variable calculus</h1>
-        <h2>The Dot Product</h2>
+        <h2>Three dimensional coordinate systems and vectors</h2>
       </div>
     <div style="height:0.2em;width:40%;background-color:#ffffff;margin:auto;margin-bottom:5%;">
     </div>
-
-
-    <script>
-    function dotpdraw() {
-      var canvas = document.getElementById('dotpcanvas');
-      if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
-
-        ctx.fillRect(25, 25, 100, 100);
-        ctx.clearRect(45, 45, 60, 60);
-        ctx.strokeRect(50, 50, 50, 50);
-      }
-    }
-    </script>
     <div id="definition" class="sections">
       <h1>Definition</h1>
         <div>
-          <div class="about_text" onload="dotpdraw();">
-            <canvas id="dotpcanvas" style="border: 1px solid;margin:5%" height="150px" width="150px" ></canvas>
+          <div class="about_text">
             <img src="profile.png" style="height:30%;width:30%;margin:5%" align="right"></img>
-            <p><h3>Def: <b>A &#183; B </b> = &Sigma;a<sub>i</sub>b<sub>i</sub> = a<sub>1</sub>b<sub>1</sub> + a<sub>2</sub>b<sub>2</sub> + a<sub>3</sub>b<sub>3</sub> athon Ready is an undergraduate student at Pennsylvania State
-              University majoring in Computer Engineering.</h3></p>
+            <p>Jonathon Ready is an undergraduate student at Pennsylvania State
+              University majoring in Computer Engineering.</p>
+            <a href="https://github.com/jonready/Python_NPRSundayPuzzle" target="_blank">.</a>
             </p>
           </div>
         </div>
      </div>
 
-    <div id="applications" class="sections">
-      <h1>Applications</h1>
+    <div id="circle" class="sections">
+      <h1>Circle</h1>
+      <div>
+        <table style="width:100%" class="exp">
+          <tr>
+            <td><h3>Vehicle Software Development &#45; International Intern</h3></td>
+            <td><h4 syle="text-align:right;">Aug 2017 &#45; Dec 2017</h4></td>
+            </tr>
+            <tr>
+            <td colspan="2">
+              <h4><i>Volvo Group Trucking Technologies</i> &#45 Gothenburg, Sweden</h4>
+              <p>Investigated modularization of soft</p>
+              <p>Verified system integrity under various extreme conditions</p>
+              <p>Validated electrical, optical and thermal specifications</p>
+            </td>
+          </tr>
+          <tr><td><br></td></tr>
+          <tr>
+            <td><h3>Summer Undergraduate Research in Engineering</h3></td>
+            <td><h4 syle="text-align:right;">May 2015 &#45 Aug 2015</h4></td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <h4><i>McGill University Electrical Engineering Department</i> &#45 Montreal, Quebec</h4>
+                <p>Interfaced Bluetooth LE with wearable haptics</p>
+                <p>Circuit analysis and data acquisition</p>
+                <p>Designed and tested PCB interface for wearable haptics</p>
+              </td>
+            </tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="sphere" class="sections">
+      <h1>Sphere</h1>
       <div>
         <table style="width:100%" class="exp">
           <tr>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Dot Product</title>
+      <link href="https://fonts.googleapis.com/css?family=Roboto:400,400italic,700,700italic" rel="stylesheet" type="text/css">
+      <link rel="stylesheet" type="text/css" href="../styles.css">
+      <link rel="icon" type="image/png" href="../img/favicon.ico"/>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  </head>
+
+  <body>
+    <div id="navbar">
+      <ul class="navbar">
+        <li><a href="#definition">Definition</a></li>
+        <li><a href="#applications">Applications</a></li>
+      </ul>
+    </div>
+
+    <div style="width:100%;min-height:60vw">
+      <div id="sections" style="width:70%;min-height:60vw;margin-left:15%">
+        <h1>Multi-variable calculus</h1>
+        <h2>Hawk Dove Game</h2>
+        <canvas id="myChart"></canvas>
+        <script>
+        	var ctx = document.getElementById('myChart').getContext('2d');
+			var chart = new Chart(ctx, {
+    		// The type of chart we want to create
+    		type: 'line',
+
+    		// The data for our dataset
+    		data: {
+        	labels: ["January", "February", "March", "April", "May", "June", "July"],
+        		datasets: [{
+            		label: "My First dataset",
+            		backgroundColor: 'rgb(255, 99, 132)',
+            		borderColor: 'rgb(255, 99, 132)',
+            		data: [0, 10, 5, 2, 20, 30, 45],
+        		}]
+    		},
+
+    		// Configuration options go here
+    			options: {}
+			});
+        </script>
+      </div>
+    <div style="height:0.2em;width:40%;background-color:#ffffff;margin:auto;margin-bottom:5%;">
+    </div>
+
+
+    <script>
+    function dotpdraw() {
+      var canvas = document.getElementById('dotpcanvas');
+      if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+
+        ctx.fillRect(25, 25, 100, 100);
+        ctx.clearRect(45, 45, 60, 60);
+        ctx.strokeRect(50, 50, 50, 50);
+      }
+    }
+    </script>
+    <div id="definition" class="sections">
+      <h1>Definition</h1>
+        <div>
+          <div class="about_text" onload="dotpdraw();">
+            <canvas id="dotpcanvas" style="border: 1px solid;margin:5%" height="150px" width="150px" ></canvas>
+            <img src="profile.png" style="height:30%;width:30%;margin:5%" align="right"></img>
+            <p><h3>Def: <b>A &#183; B </b> = &Sigma;a<sub>i</sub>b<sub>i</sub> = a<sub>1</sub>b<sub>1</sub> + a<sub>2</sub>b<sub>2</sub> + a<sub>3</sub>b<sub>3</sub> athon Ready is an undergraduate student at Pennsylvania State
+              University majoring in Computer Engineering.</h3></p>
+            </p>
+          </div>
+        </div>
+     </div>
+
+    <div id="applications" class="sections">
+      <h1>Applications</h1>
+      <div>
+        <table style="width:100%" class="exp">
+          <tr>
+            <td><h3>Vehicle Software Development &#45; International Intern</h3></td>
+            <td><h4 syle="text-align:right;">Aug 2017 &#45; Dec 2017</h4></td>
+            </tr>
+            <tr>
+            <td colspan="2">
+              <h4><i>Volvo Group Trucking Technologies</i> &#45 Gothenburg, Sweden</h4>
+              <p>Investigated modularization of soft</p>
+              <p>Verified system integrity under various extreme conditions</p>
+              <p>Validated electrical, optical and thermal specifications</p>
+            </td>
+          </tr>
+          <tr><td><br></td></tr>
+          <tr>
+            <td><h3>Summer Undergraduate Research in Engineering</h3></td>
+            <td><h4 syle="text-align:right;">May 2015 &#45 Aug 2015</h4></td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <h4><i>McGill University Electrical Engineering Department</i> &#45 Montreal, Quebec</h4>
+                <p>Interfaced Bluetooth LE with wearable haptics</p>
+                <p>Circuit analysis and data acquisition</p>
+                <p>Designed and tested PCB interface for wearable haptics</p>
+              </td>
+            </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="sections" style="height:10vh"></div>
+  </body>
+</html>
