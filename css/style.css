@@ -152,7 +152,7 @@ SECTION WRAPS
 #headerwrap {
   background:url(../img/BDA22542-82AA-4C04-A73A-4BE3363B77B6.jpeg) no-repeat center top;
   /*background: url(../img/microsoft.jpg) no-repeat center top;*/
-  margin-top: 20px;
+  margin-top: 0px;
   padding-top: 140px;
   text-align: center;
   background-attachment: relative;
