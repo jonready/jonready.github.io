@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedometer Selfie</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Video for live camera feed */
+        #camera {
+            display: none; /* Hide camera feed */
+        }
+
+        /* Speedometer canvas */
+        #speedometer {
+            width: 80vw; /* Dynamic width for responsive design */
+            height: 80vw; /* Maintain aspect ratio */
+        }
+
+        /* Speed display */
+        .speed {
+            position: absolute;
+            font-size: 3rem;
+            color: white;
+        }
+
+        /* Toggle and Capture buttons */
+        .button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 5px;
+            color: #282c34;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <video id="camera" width="640" height="480" autoplay></video>
+    <canvas id="speedometer"></canvas>
+    <div class="speed" id="speed">0 km/h</div>
+    <button class="button" id="unitToggle">Switch to mph</button>
+    <button class="button" id="capture">Take Selfie</button>
+
+    <script>
+        // Initialize variables
+        let lastSpeed = 0;
+        let useKmH = true;
+        const maxSpeed = 360; // Maximum speed on the speedometer
+        const smoothingFactor = 0.1; // Adjust this for animation smoothness
+        const canvas = document.getElementById('speedometer');
+        const ctx = canvas.getContext('2d');
+        const speedDisplay = document.getElementById('speed');
+        const video = document.getElementById('camera');
+        
+        // Access the user's camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                console.error("Camera access error:", err);
+                alert("Unable to access the camera.");
+            });
+
+        // Resize the canvas to be responsive
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            drawSpeedometer(lastSpeed); // Redraw on resize
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); // Initial size
+
+        // Function to draw the speedometer
+        function drawSpeedometer(speed) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 20;
+
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the fixed outer circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.lineWidth = 20;
+            ctx.strokeStyle = '#444'; // Fixed outer color
+            ctx.stroke();
+
+            // Calculate the arc end angle
+            const endAngle = (Math.min(speed, maxSpeed) / maxSpeed) * 2 * Math.PI;
+
+            // Determine color based on speed
+            let color;
+            if (speed < maxSpeed / 3) {
+                color = 'green';
+            } else if (speed < (2 * maxSpeed) / 3) {
+                color = 'yellow';
+            } else {
+                color = 'red';
+            }
+
+            // Draw the speed arc (starts at the bottom)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0.5 * Math.PI, 0.5 * Math.PI + endAngle);
+            ctx.lineWidth = 20;
+            ctx.strokeStyle = color;
+            ctx.stroke();
+
+            // Update speed text position
+            speedDisplay.style.left = `${centerX + canvas.offsetLeft - speedDisplay.clientWidth / 2}px`;
+            speedDisplay.style.top = `${centerY + canvas.offsetTop - speedDisplay.clientHeight / 2}px`;
+
+            // Update speed text
+            speedDisplay.textContent = `${speed.toFixed(1)} ${useKmH ? 'km/h' : 'mph'}`;
+        }
+
+        // Function to update speed
+        function updateSpeed(position) {
+            const speed = position.coords.speed; // Speed in meters per second
+            let speedConverted;
+            if (useKmH) {
+                speedConverted = speed * 3.6; // Convert to km/h
+            } else {
+                speedConverted = speed * 2.237; // Convert to mph
+            }
+
+            // Apply smoothing
+            lastSpeed = lastSpeed + (speedConverted - lastSpeed) * smoothingFactor;
+            drawSpeedometer(lastSpeed);
+        }
+
+        // Function to handle errors
+        function showError(error) {
+            console.error(error);
+            alert("Unable to retrieve speed. Please ensure location services are enabled.");
+        }
+
+        // Toggle between km/h and mph
+        document.getElementById('unitToggle').addEventListener('click', () => {
+            useKmH = !useKmH;
+            const buttonText = useKmH ? 'Switch to mph' : 'Switch to km/h';
+            document.getElementById('unitToggle').textContent = buttonText;
+        });
+
+        // Capture the selfie with speed overlay
+        document.getElementById('capture').addEventListener('click', () => {
+            // Draw the video frame on the canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Draw the speedometer overlay
+            drawSpeedometer(lastSpeed);
+        });
+
+        // Initialize geolocation
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(updateSpeed, showError, { enableHighAccuracy: true });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    </script>
+</body>
+</html>
