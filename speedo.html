@@ -104,10 +104,12 @@
             ctx.strokeStyle = color;
             ctx.stroke();
 
+            // Update speed text position
+            speedDisplay.style.left = `${centerX + canvas.offsetLeft - speedDisplay.clientWidth / 2}px`;
+            speedDisplay.style.top = `${centerY + canvas.offsetTop - speedDisplay.clientHeight / 2}px`;
+
             // Update speed text
             speedDisplay.textContent = `${speed.toFixed(1)} ${useKmH ? 'km/h' : 'mph'}`;
-            speedDisplay.style.left = `${centerX - speedDisplay.clientWidth / 2}px`;
-            speedDisplay.style.top = `${centerY - speedDisplay.clientHeight / 2}px`;
         }
 
         // Function to update speed
