@@ -97,9 +97,9 @@
                 color = 'red';
             }
 
-            // Draw the speed arc
+            // Draw the speed arc (starts at the bottom)
             ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, endAngle);
+            ctx.arc(centerX, centerY, radius, 0.5 * Math.PI, 0.5 * Math.PI + endAngle);
             ctx.lineWidth = 20;
             ctx.strokeStyle = color;
             ctx.stroke();
