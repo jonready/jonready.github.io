@@ -18,36 +18,17 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Speedometer circle */
-        .speedometer {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            border: 10px solid #61dafb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 20px;
+        /* Speedometer canvas */
+        #speedometer {
+            width: 80vw; /* Dynamic width for responsive design */
+            height: 80vw; /* Maintain aspect ratio */
         }
 
         /* Speed display */
         .speed {
-            font-size: 3rem;
-            position: relative;
-            z-index: 2; /* Ensure speed text is above the needle */
-        }
-
-        /* Speedometer needle */
-        .needle {
             position: absolute;
-            width: 2px;
-            height: 50%;
-            background-color: #ff6347;
-            transform-origin: bottom center;
-            transform: rotate(0deg);
-            transition: transform 0.5s ease-in-out;
-            z-index: 1; /* Place the needle below the speed text */
+            font-size: 3rem;
+            color: white;
         }
 
         /* Toggle button */
@@ -64,47 +45,84 @@
     </style>
 </head>
 <body>
-    <div class="speedometer">
-        <div class="speed" id="speed">0 km/h</div>
-        <div class="needle" id="needle"></div>
-    </div>
+    <canvas id="speedometer"></canvas>
+    <div class="speed" id="speed">0 km/h</div>
     <button class="toggle" id="unitToggle">Switch to mph</button>
 
     <script>
         // Initialize variables
         let lastSpeed = 0;
-        let useKmH = true; // Toggle state: true for km/h, false for mph
-        const smoothingFactor = 0.1; // Adjust this value to control smoothing
+        let useKmH = true;
+        const maxSpeed = 360; // Maximum speed on the speedometer
+        const smoothingFactor = 0.1; // Adjust this for animation smoothness
+        const canvas = document.getElementById('speedometer');
+        const ctx = canvas.getContext('2d');
+        const speedDisplay = document.getElementById('speed');
+        
+        // Resize the canvas to be responsive
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            drawSpeedometer(lastSpeed); // Redraw on resize
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); // Initial size
 
-        // Check if geolocation is supported
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(updateSpeed, showError, { enableHighAccuracy: true });
-        } else {
-            alert("Geolocation is not supported by this browser.");
+        // Function to draw the speedometer
+        function drawSpeedometer(speed) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 20;
+
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw the fixed outer circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.lineWidth = 20;
+            ctx.strokeStyle = '#444'; // Fixed outer color
+            ctx.stroke();
+
+            // Calculate the arc end angle
+            const endAngle = (Math.min(speed, maxSpeed) / maxSpeed) * 2 * Math.PI;
+
+            // Determine color based on speed
+            let color;
+            if (speed < maxSpeed / 3) {
+                color = 'green';
+            } else if (speed < (2 * maxSpeed) / 3) {
+                color = 'yellow';
+            } else {
+                color = 'red';
+            }
+
+            // Draw the speed arc
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, endAngle);
+            ctx.lineWidth = 20;
+            ctx.strokeStyle = color;
+            ctx.stroke();
+
+            // Update speed text
+            speedDisplay.textContent = `${speed.toFixed(1)} ${useKmH ? 'km/h' : 'mph'}`;
+            speedDisplay.style.left = `${centerX - speedDisplay.clientWidth / 2}px`;
+            speedDisplay.style.top = `${centerY - speedDisplay.clientHeight / 2}px`;
         }
 
         // Function to update speed
         function updateSpeed(position) {
             const speed = position.coords.speed; // Speed in meters per second
-
-            // Convert speed to the selected unit
             let speedConverted;
             if (useKmH) {
-                speedConverted = (speed * 3.6).toFixed(1); // Convert to km/h
+                speedConverted = speed * 3.6; // Convert to km/h
             } else {
-                speedConverted = (speed * 2.237).toFixed(1); // Convert to mph
+                speedConverted = speed * 2.237; // Convert to mph
             }
 
             // Apply smoothing
             lastSpeed = lastSpeed + (speedConverted - lastSpeed) * smoothingFactor;
-
-            // Update speed display
-            const unit = useKmH ? 'km/h' : 'mph';
-            document.getElementById('speed').textContent = `${lastSpeed.toFixed(1)} ${unit}`;
-
-            // Rotate the speedometer needle (0-180 degrees for simplicity)
-            const rotation = Math.min(lastSpeed, 180); // Cap rotation at 180 degrees
-            document.getElementById('needle').style.transform = `rotate(${rotation}deg)`;
+            drawSpeedometer(lastSpeed);
         }
 
         // Function to handle errors
@@ -115,10 +133,17 @@
 
         // Toggle between km/h and mph
         document.getElementById('unitToggle').addEventListener('click', () => {
-            useKmH = !useKmH; // Toggle the state
+            useKmH = !useKmH;
             const buttonText = useKmH ? 'Switch to mph' : 'Switch to km/h';
             document.getElementById('unitToggle').textContent = buttonText;
         });
+
+        // Initialize geolocation
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(updateSpeed, showError, { enableHighAccuracy: true });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
     </script>
 </body>
 </html>
