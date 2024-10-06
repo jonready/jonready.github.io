@@ -35,6 +35,13 @@
             color: white;
         }
 
+        /* Display captured selfie */
+        #capturedSelfie {
+            margin-top: 20px;
+            width: 80vw;
+            height: auto;
+        }
+
         /* Toggle and Capture buttons */
         .button {
             padding: 10px 20px;
@@ -54,6 +61,7 @@
     <div class="speed" id="speed">0 km/h</div>
     <button class="button" id="unitToggle">Switch to mph</button>
     <button class="button" id="capture">Take Selfie</button>
+    <img id="capturedSelfie" alt="Captured Selfie" />
 
     <script>
         // Initialize variables
@@ -65,7 +73,8 @@
         const ctx = canvas.getContext('2d');
         const speedDisplay = document.getElementById('speed');
         const video = document.getElementById('camera');
-        
+        const capturedSelfie = document.getElementById('capturedSelfie');
+
         // Access the user's camera
         navigator.mediaDevices.getUserMedia({ video: true })
             .then((stream) => {
@@ -164,6 +173,10 @@
 
             // Draw the speedometer overlay
             drawSpeedometer(lastSpeed);
+
+            // Convert the canvas to an image and display it
+            const dataURL = canvas.toDataURL('image/png');
+            capturedSelfie.src = dataURL;
         });
 
         // Initialize geolocation
