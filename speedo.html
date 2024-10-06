@@ -10,6 +10,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
             height: 100vh;
             margin: 0;
             background: #282c34;
@@ -27,6 +28,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            margin-bottom: 20px;
         }
 
         /* Speed display */
@@ -35,7 +37,7 @@
         }
 
         /* Speedometer circle animation */
-        .speedometer::before {
+        .needle {
             content: "";
             position: absolute;
             width: 100%;
@@ -45,16 +47,35 @@
             clip-path: polygon(50% 0%, 0% 0%, 0% 100%, 50% 100%);
             transform-origin: center;
             transform: rotate(0deg);
-            transition: transform 0.5s ease;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        /* Toggle button */
+        .toggle {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 5px;
+            color: #282c34;
+            font-size: 1rem;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="speedometer">
         <div class="speed" id="speed">0 km/h</div>
+        <div class="needle" id="needle"></div>
     </div>
+    <button class="toggle" id="unitToggle">Switch to mph</button>
 
     <script>
+        // Initialize variables
+        let lastSpeed = 0;
+        let useKmH = true; // Toggle state: true for km/h, false for mph
+        const smoothingFactor = 0.1; // Adjust this value to control smoothing
+
         // Check if geolocation is supported
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(updateSpeed, showError, { enableHighAccuracy: true });
@@ -65,14 +86,25 @@
         // Function to update speed
         function updateSpeed(position) {
             const speed = position.coords.speed; // Speed in meters per second
-            const speedKmh = (speed * 3.6).toFixed(1); // Convert to km/h and format to one decimal place
+
+            // Convert speed to the selected unit
+            let speedConverted;
+            if (useKmH) {
+                speedConverted = (speed * 3.6).toFixed(1); // Convert to km/h
+            } else {
+                speedConverted = (speed * 2.237).toFixed(1); // Convert to mph
+            }
+
+            // Apply smoothing
+            lastSpeed = lastSpeed + (speedConverted - lastSpeed) * smoothingFactor;
 
             // Update speed display
-            document.getElementById('speed').textContent = `${speedKmh} km/h`;
+            const unit = useKmH ? 'km/h' : 'mph';
+            document.getElementById('speed').textContent = `${lastSpeed.toFixed(1)} ${unit}`;
 
             // Rotate the speedometer needle (0-180 degrees for simplicity)
-            const rotation = Math.min(speedKmh, 180); // Cap rotation at 180 degrees
-            document.querySelector('.speedometer::before').style.transform = `rotate(${rotation}deg)`;
+            const rotation = Math.min(lastSpeed, 180); // Cap rotation at 180 degrees
+            document.getElementById('needle').style.transform = `rotate(${rotation}deg)`;
         }
 
         // Function to handle errors
@@ -80,6 +112,13 @@
             console.error(error);
             alert("Unable to retrieve speed. Please ensure location services are enabled.");
         }
+
+        // Toggle between km/h and mph
+        document.getElementById('unitToggle').addEventListener('click', () => {
+            useKmH = !useKmH; // Toggle the state
+            const buttonText = useKmH ? 'Switch to mph' : 'Switch to km/h';
+            document.getElementById('unitToggle').textContent = buttonText;
+        });
     </script>
 </body>
 </html>
