@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedometer</title>
+    <style>
+        /* Full-screen container for the speedometer */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Speedometer circle */
+        .speedometer {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 10px solid #61dafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Speed display */
+        .speed {
+            font-size: 3rem;
+        }
+
+        /* Speedometer circle animation */
+        .speedometer::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 10px solid #61dafb;
+            clip-path: polygon(50% 0%, 0% 0%, 0% 100%, 50% 100%);
+            transform-origin: center;
+            transform: rotate(0deg);
+            transition: transform 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="speedometer">
+        <div class="speed" id="speed">0 km/h</div>
+    </div>
+
+    <script>
+        // Check if geolocation is supported
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(updateSpeed, showError, { enableHighAccuracy: true });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+
+        // Function to update speed
+        function updateSpeed(position) {
+            const speed = position.coords.speed; // Speed in meters per second
+            const speedKmh = (speed * 3.6).toFixed(1); // Convert to km/h and format to one decimal place
+
+            // Update speed display
+            document.getElementById('speed').textContent = `${speedKmh} km/h`;
+
+            // Rotate the speedometer needle (0-180 degrees for simplicity)
+            const rotation = Math.min(speedKmh, 180); // Cap rotation at 180 degrees
+            document.querySelector('.speedometer::before').style.transform = `rotate(${rotation}deg)`;
+        }
+
+        // Function to handle errors
+        function showError(error) {
+            console.error(error);
+            alert("Unable to retrieve speed. Please ensure location services are enabled.");
+        }
+    </script>
+</body>
+</html>
