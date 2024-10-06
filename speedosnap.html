@@ -168,15 +168,23 @@
 
         // Capture the selfie with speed overlay
         document.getElementById('capture').addEventListener('click', () => {
-            // Draw the video frame on the canvas
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // Set canvas size to match the video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
 
-            // Draw the speedometer overlay
-            drawSpeedometer(lastSpeed);
+            // Introduce a small delay before capturing
+            setTimeout(() => {
+                // Draw the video frame on the canvas
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Convert the canvas to an image and display it
-            const dataURL = canvas.toDataURL('image/png');
-            capturedSelfie.src = dataURL;
+                // Draw the speedometer overlay
+                drawSpeedometer(lastSpeed);
+
+                // Convert the canvas to an image and display it
+                const dataURL = canvas.toDataURL('image/png');
+                console.log('Captured Image Data URL:', dataURL); // Debug log
+                capturedSelfie.src = dataURL;
+            }, 500); // 500 ms delay
         });
 
         // Initialize geolocation
