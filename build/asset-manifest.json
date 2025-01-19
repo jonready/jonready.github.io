@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.a3061bad.css",
+    "main.js": "/static/js/main.1b3e54de.js",
+    "static/media/filtered_airports.csv": "/static/media/filtered_airports.85306b724a4e7aee6037.csv",
+    "static/media/mileage_table.csv": "/static/media/mileage_table.816f325014268ac84bde.csv",
+    "index.html": "/index.html",
+    "main.a3061bad.css.map": "/static/css/main.a3061bad.css.map",
+    "main.1b3e54de.js.map": "/static/js/main.1b3e54de.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a3061bad.css",
+    "static/js/main.1b3e54de.js"
+  ]
+}
