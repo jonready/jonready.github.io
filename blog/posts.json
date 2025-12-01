@@ -1,0 +1,8 @@
+[
+  {
+    "title": "Visualizing bsdiff: The Delta Compression Algorithm Used by macOS and Google Chrome",
+    "date": "November 30, 2025",
+    "url": "posts/visualizing-bsdiff.html",
+    "excerpt": "An interactive exploration of the bsdiff binary diff algorithm used for software updates in macOS and Chrome."
+  }
+]

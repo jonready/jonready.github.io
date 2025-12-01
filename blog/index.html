@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Blog — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Thoughts on building, exploring, and technology.">
+
+  <link href="../img/favicon.ico" rel="icon">
+  <link href="../img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="../css/style.css" rel="stylesheet">
+
+  <style>
+    .blog-post {
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .blog-post:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .blog-post h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .blog-post h3 a {
+      color: #1a1a1a;
+      border: none;
+    }
+
+    .blog-post h3 a:hover {
+      opacity: 0.7;
+    }
+
+    .blog-date {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .blog-excerpt {
+      color: #666;
+      margin-bottom: 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #999;
+      border: none;
+    }
+
+    .back-link:hover {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <a href="../" class="back-link">← Back to home</a>
+
+    <header>
+      <h1>Blog</h1>
+    </header>
+
+    <section id="blog-posts">
+      <p style="color: #999;">Loading posts...</p>
+    </section>
+  </main>
+
+  <script>
+    async function loadBlogPosts() {
+      try {
+        const response = await fetch('posts.json');
+        const posts = await response.json();
+
+        const container = document.getElementById('blog-posts');
+
+        if (posts.length === 0) {
+          container.innerHTML = '<p style="color: #999;">No posts yet. Check back soon!</p>';
+          return;
+        }
+
+        container.innerHTML = posts.map(post => `
+          <article class="blog-post">
+            <h3><a href="${post.url}">${post.title}</a></h3>
+            <div class="blog-date">${post.date}</div>
+            <p class="blog-excerpt">${post.excerpt}</p>
+          </article>
+        `).join('');
+      } catch (error) {
+        document.getElementById('blog-posts').innerHTML =
+          '<p style="color: #999;">No posts yet. Check back soon!</p>';
+      }
+    }
+
+    loadBlogPosts();
+  </script>
+
+</body>
+</html>
