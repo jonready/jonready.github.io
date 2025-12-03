@@ -1,5 +1,11 @@
 [
   {
+    "title": "Everyone in Seattle Hates AI",
+    "date": "December 3, 2025",
+    "url": "posts/everyone-in-seattle-hates-ai.html",
+    "excerpt": "A post about everyone in Seattle hating AI."
+  },
+  {
     "title": "Visualizing bsdiff: The Delta Compression Algorithm Used by macOS and Google Chrome",
     "date": "November 30, 2025",
     "url": "posts/visualizing-bsdiff.html",
