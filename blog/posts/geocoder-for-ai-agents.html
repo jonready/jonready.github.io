@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="../../js/analytics.js"></script>
+  <title>I Built a Geocoder for AI Agents Because I Couldn't Afford Google Maps — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="How I built wplaces, a semantic geocoding layer for AI agents that achieves 96.6% recall at 40ms latency—without Google's $3.65M/year price tag.">
+
+  <link href="../../img/favicon.ico" rel="icon">
+  <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="../../css/style.css" rel="stylesheet">
+
+  <style>
+    .post-header {
+      margin-bottom: 48px;
+    }
+
+    .post-date {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .post-content h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+
+    .post-content h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    .post-content li {
+      margin-bottom: 8px;
+    }
+
+    .geocoder-types {
+      display: grid;
+      gap: 16px;
+      margin: 24px 0;
+      list-style: none;
+      padding: 0;
+    }
+
+    .geocoder-type {
+      background: #f8f9fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 0;
+      border-left: 4px solid #e1e4e8;
+    }
+
+    .geocoder-type.semantic {
+      border-left-color: #4285f4;
+    }
+
+    .geocoder-type.lexical {
+      border-left-color: #34a853;
+    }
+
+    .geocoder-type h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .geocoder-type h4 .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .geocoder-type.semantic h4 .badge {
+      background: #e8f0fe;
+      color: #4285f4;
+    }
+
+    .geocoder-type.lexical h4 .badge {
+      background: #fce8e6;
+      color: #d93025;
+    }
+
+    .geocoder-type .examples {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .geocoder-type .pros-cons {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .geocoder-type .pro,
+    .geocoder-type .con {
+      margin: 0;
+    }
+
+    .geocoder-type .pro::before {
+      content: "+";
+      color: #43a047;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .geocoder-type .con::before {
+      content: "−";
+      color: #e53935;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .geocoder-type .pros-cons {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+    .post-content code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 14px;
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    }
+
+    .post-content pre {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    .post-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #999;
+      border: none;
+    }
+
+    .back-link:hover {
+      color: #2c3e50;
+    }
+
+    .hero-image {
+      margin: -24px 0 32px 0;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-image figcaption {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .tweet-card {
+      display: block;
+      margin: 20px 0;
+      padding: 16px;
+      background: #f8f9fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s;
+    }
+
+    .tweet-card:hover {
+      border-color: #1da1f2;
+    }
+
+    .tweet-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .tweet-author img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .tweet-author strong {
+      display: block;
+      font-size: 15px;
+      color: #1a1a1a;
+    }
+
+    .tweet-author span {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .tweet-card p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    blockquote {
+      border-left: 3px solid #e0e0e0;
+      margin: 24px 0;
+      padding-left: 20px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .comparison-chart {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 32px 0;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 110px 1fr 120px;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      background: white;
+      border-radius: 6px;
+    }
+
+    .highlight-row {
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+    }
+
+    .chart-label {
+      font-weight: 500;
+      color: #1a1a1a;
+      font-size: 14px;
+    }
+
+    .chart-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .bar-group {
+      height: 22px;
+    }
+
+    .bar {
+      height: 100%;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      min-width: 80px;
+    }
+
+    .bar-value {
+      font-size: 12px;
+      font-weight: 500;
+      color: white;
+      white-space: nowrap;
+    }
+
+    .recall-bar {
+      background: linear-gradient(90deg, #4caf50, #66bb6a);
+    }
+
+    .recall-bar.recall-bad {
+      background: linear-gradient(90deg, #ef5350, #e57373);
+    }
+
+    .latency-bar {
+      background: linear-gradient(90deg, #2196f3, #42a5f5);
+    }
+
+    .latency-bar.google-latency {
+      background: linear-gradient(90deg, #ff9800, #ffb74d);
+    }
+
+    .chart-cost {
+      font-size: 13px;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .cost-expensive {
+      color: #e53935;
+    }
+
+    .cost-cheap {
+      color: #43a047;
+    }
+
+    .geocoder-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 32px 0;
+      font-size: 15px;
+    }
+
+    .geocoder-table th,
+    .geocoder-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .geocoder-table th {
+      font-weight: 500;
+      color: #666;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .geocoder-table .geocoder-name {
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .geocoder-table .row-fail {
+      background: #fafafa;
+    }
+
+    .geocoder-table .row-success {
+      background: #e8f5e9;
+    }
+
+    .geocoder-table .check {
+      color: #43a047;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .geocoder-table .x {
+      color: #e53935;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .geocoder-table .cost-note {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .geocoder-table .verdict {
+      font-weight: 500;
+    }
+
+    .geocoder-table .verdict-fail {
+      color: #e53935;
+    }
+
+    .geocoder-table .verdict-success {
+      color: #43a047;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .recall-color {
+      background: #4caf50;
+    }
+
+    .latency-color {
+      background: #2196f3;
+    }
+
+    @media (max-width: 600px) {
+      .chart-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .chart-cost {
+        text-align: left;
+      }
+
+      .chart-legend {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 32px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <a href="../" class="back-link">← Back to blog</a>
+
+    <article>
+      <div class="post-header">
+        <h1>I Built My Own Geocoder for AI Agents Because I Couldn't Afford Google Places (Draft Post)</h1>
+        <div class="post-date">January 9, 2026</div>
+      </div>
+
+      <figure class="hero-image">
+        <img src="../../img/wanderfugl_enchantments.png" alt="Wanderfugl planning a backpacking route through the Enchantments">
+        <figcaption>A <a href="https://wanderfugl.com" target="_blank">Wanderfugl</a> itinerary for the Enchantments—permit zones, camp locations, and trailhead logistics all resolved with wplaces.</figcaption>
+      </figure>
+
+      <div class="post-content">
+        <p>
+          An LLM only has so much space in its weights to store data. It generalizes well—it knows about regions, landmarks, the vibe of a neighborhood. But there's no way it's storing hundreds of gigabytes of map data with fidelity. It knows <em>about</em> places without being able to precisely <em>locate</em> them.
+        </p>
+
+        <p>
+          The solution is giving the model tools to explore the world, while it handles higher level reasoning. In the same way tool use let's a model calculate a hash rather than hallucinating one, geographic tools let it explore routes and places without memorization. Andrej Karpathy calls this "the cognitive core"— a maximally adaptive, smart LLM that has enhanced reasonining because it looks up details and can reason about them:
+        </p>
+
+        <a href="https://x.com/karpathy/status/1938626382248149433" target="_blank" class="tweet-card">
+          <div class="tweet-author">
+            <img src="https://pbs.twimg.com/profile_images/1296667294148382721/9Pr6XrPB_normal.jpg" alt="Andrej Karpathy">
+            <div>
+              <strong>Andrej Karpathy</strong>
+              <span>@karpathy</span>
+            </div>
+          </div>
+          <p>The "cognitive core" of an LLM I think wants to be very small (<10B params). It doesn't want to memorize any "data" (world knowledge, code, math, etc.) inside its weights. Those all go into context provided on demand.</p>
+        </a>
+
+        <p>
+          For years, the default answer for places lookup was Google Places. It understood semantic queries, handled multilingual search, and just worked at minimal cost. Then Google <a href="https://techcrunch.com/2018/05/02/google-revamps-its-google-maps-developer-platform/" target="_blank">jacked up prices</a> to 2000x astronomical levels and locked down the data. You can't cache results. You can't enrich their data with your own. Every query routes through their APIs, forever. The developer community that built on Google Maps got rug-pulled, and there's still no real alternative.
+        </p>
+
+        <p>
+          So I built one.
+        </p>
+
+        <h2>The vocabulary mismatch problem</h2>
+
+        <p>
+          I tried all the major non-Google geocoding providers—OpenCage, Mapbox, Nominatim. Photon performed best: it's an Elasticsearch-based geocoder for OpenStreetMap data with good tuning options—you can adjust geographic biasing and run your own data imports. Even with tuning, it only got the right answer 72% of the time. That sounds okayish until you realize what's happening in the other 28%.
+        </p>
+
+        <p>
+          The problem isn't that LLMs make typos. Elasticsearch handles typos fine. The problem is vocabulary mismatch—the LLM uses one spelling or language while the data uses another.
+        </p>
+
+        <p>
+          The LLM asks for "Refugio Biella" (Spanish spelling). OSM has it as "Rifugio Biella - Seekofelhütte" (Italian-German bilingual). Photon's top results are refugios in Spain—"refugio" matches Spanish huts lexically better than "rifugio" matches the Italian one, even with geographic biasing. A stricter geo-filter helps, but doesn't solve the core problem: lexical search can't bridge "refugio" to "rifugio."
+        </p>
+
+        <p>
+          This matters because the signal from a null result gets muddied. When the geocoder returns nothing, the LLM doesn't know if the place doesn't exist (find an alternative) or if it just asked wrong (but what's the right keyword?). This shouldn't be a failure mode at all, if the location exists the llm should be able to find it on the first try.
+        </p>
+
+        <h2>The state of geocoders in 2026</h2>
+
+        <p>As a developer, if you want to find a location you need a geocoder to translate a query into coordinates. There are basically two types:</p>
+
+        <div class="geocoder-types">
+          <div class="geocoder-type semantic">
+            <h4>Hybrid Semantic geocoders <span class="badge">~98% recall</span></h4>
+            <div class="examples">Google Places, Apple Maps (only on apple devices)</div>
+            <div class="pros-cons">
+              <span class="pro">Strong semantic matching</span>
+              <span class="con">Expensive, closed ecosystem</span>
+            </div>
+          </div>
+          <div class="geocoder-type lexical">
+            <h4>Lexical geocoders <span class="badge">~72% recall</span></h4>
+            <div class="examples">Photon, Mapbox, OpenCage, Nominatim</div>
+            <div class="pros-cons">
+              <span class="pro">Cheap, open-data friendly</span>
+              <span class="con">Breaks on vocabulary mismatch</span>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          Google understands the vocabulary mismatch problem. Google Places does semantic search well—it takes what the agent is good at (rough location, semantic query) and handles the resolution internally. It works. Around 98% recall in my testing.
+        </p>
+
+        <p>
+          Three problems:
+        </p>
+
+        <p>
+          <strong>Price.</strong> Google Places API costs <a href="https://developers.google.com/maps/billing-and-pricing/pricing" target="_blank">$32 per 1,000 requests</a> for Text Search. An LLM typically makes 5-20 geocoding calls per response as it searches and refines. At scale, that's 100+ Places calls per second. $276,000 per day. <strong>Over $100 million per year.</strong> For geocoding.
+        </p>
+
+        <p>
+          Google offers a better deal if you lock into Gemini: <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank">$25 per 1,000 "grounded prompts"</a> bundles unlimited Places calls into each prompt. At the same scale, that's ~$4 million per year instead of $100 million. But you have to use Gemini exclusively. No Claude, no GPT-5, no Grok, no open-source models. You're not just paying for geocoding; you're surrendering model choice.
+        </p>
+
+        <p>
+          <strong>Restrictions.</strong> Google returns a Place ID, which you can cache. But that ID is only useful within Google's ecosystem—every enrichment, every lookup routes back through their APIs. When wplaces returns an OSM ID, you get a key into an open data ecosystem. Join it to Overture, Foursquare, your own database. The data is yours to extend.
+        </p>
+
+        <p>
+          Some competitors might have sweetheart deals with Google. Most don't. They're either bleeding cash, degrading their product to reduce API calls, or slowly dying. I watched one startup shutter after running out of Google Cloud credits. They tried to switch off Google and couldn't.
+        </p>
+
+        <h2>What I Built</h2>
+
+        <p>
+          wplaces is a hybrid search that combines semantic search with keyword matching, bounded by an area the LLM provides. The interface is simple:
+        </p>
+
+        <pre><code>{
+  "query": "Refugio Biella",
+  "lat": 46.65,
+  "lng": 12.35,
+  "radius": 50  // km
+}</code></pre>
+
+        <p>
+          Coincidentally, this is almost identical to how Gemini's maps grounding works—semantic query plus location hint. The key difference is the radius parameter: it lets the LLM constrain the search area, which avoids Gemini's tendency to overfavor popular locations when you're looking for something specific and local.
+        </p>
+
+        <p>
+          The LLM provides what it's good at: a semantic description and rough location. wplaces handles the part it can't do.
+        </p>
+
+        <p>
+          <strong>Results: 96.6% recall, 40ms latency, 200 QPS per node.</strong> Close enough to Google's 98% recall that the difference rarely matters in practice—and fast enough that the model spends more time generating its next token than waiting for spatial knowledge.
+        </p>
+
+        <p>
+          Two insights made this work. First: the LLM doesn't need perfect precision. If the correct result is in the set along with some wrong ones, the LLM picks the right one easily. It's terrible at conjuring the right keyword from nothing, but great at selecting from candidates. So I return a few semantically relevant results—the target plus potentially interesting alternatives—and the LLM handles the rest.
+        </p>
+
+        <p>
+          Second: LLMs don't actually need global search. For broad queries like "best steakhouse in Texas," they'll use web search more effectively than a geo search across millions of restaurants. The geo search should be constrained to where the LLM already knows it's looking. That's why the radius parameter matters—it's not a limitation, it's the right tool for the job.
+        </p>
+
+        <p>
+          I ensemble two results from semantic search with one from Photon. The failure modes are mostly non-overlapping, and together they hit 96.6%.
+        </p>
+
+        <h2>Why Semantic Search Alone Isn't Enough</h2>
+
+        <p>
+          Raw OSM data is a disaster for embeddings. The tagging ontology is designed for structured queries by humans who know the schema. <code>amenity=alpine_hut</code>, <code>operator=SAC</code>, <code>tourism=attraction</code>—these are database fields, not natural language.
+        </p>
+
+        <p>
+          This is where the real unlock happened. For each place, I pull in everything OSM has: the tags, alternative names, linked Wikipedia articles, website content, category hierarchies. Then an LLM agent synthesizes all of that into embedding text. "Rifugio Biella - Seekofelhütte" becomes "Rifugio Biella, also known as Seekofelhütte, an alpine refuge in the Sesto Dolomites near the Austrian border, offering overnight accommodation for hikers."
+        </p>
+
+        <p>
+          The agent handles the messiness of OSM—inconsistent tagging, missing fields, multilingual names scattered across different attributes—and produces clean, searchable text. That's what makes semantic search actually work.
+        </p>
+
+        <p>
+          The curation also handles multilingual. I use a multilingual embedding model and generate text in both English and the local language. The LLM might query "mountain hut" or "rifugio" depending on conversation context. Both need to resolve to the same places.
+        </p>
+
+        <p>
+          This matters especially for travel, where users are almost definitionally searching for places in languages they don't speak. The LLM thinks in the user's language but the ground truth is in the local language.
+        </p>
+
+        <p>
+          I found that putting multiple languages into a single embedding actually works better than trying to detect and route. Multilingual models are trained to map "mountain hut" and "Berghütte" and "rifugio" to nearby regions of the embedding space. Stuffing English + local language into the embedding text isn't a hack—it's leveraging what the model is good at.
+        </p>
+
+        <p>
+          Places like South Tyrol—Italian region, German speakers, English tourists—just work. No language detection needed.
+        </p>
+
+        <h2>The Architecture</h2>
+
+        <p>
+          The trick to 40ms latency is partitioning. I index places into H3 hexagonal cells at two resolutions: tight (a few km) and wide (dozens of km). Most queries only search one cell.
+        </p>
+
+        <p>
+          The agent provides lat/lng + radius. That tells me which H3 cells to query. I'm not searching the world, I'm searching a hex.
+        </p>
+
+        <p>
+          HNSW indices live in memory via usearch. Everything else is on NVMe. At 40ms response time, the model spends more time generating its next token than waiting for spatial knowledge.
+        </p>
+
+        <table class="geocoder-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Recall</th>
+              <th>Cost</th>
+              <th>Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-fail">
+              <td class="geocoder-name">Google Places</td>
+              <td><span class="check">✓</span> 98%</td>
+              <td><span class="x">✗</span> $440k/mo <span class="cost-note">@ 10 QPS</span></td>
+              <td class="verdict verdict-fail">Too expensive</td>
+            </tr>
+            <tr class="row-fail">
+              <td class="geocoder-name">Photon</td>
+              <td><span class="x">✗</span> 72%</td>
+              <td><span class="check">✓</span> ~$70/mo</td>
+              <td class="verdict verdict-fail">Too unreliable</td>
+            </tr>
+            <tr class="row-success">
+              <td class="geocoder-name">wplaces</td>
+              <td><span class="check">✓</span> 96.6%</td>
+              <td><span class="check">✓</span> ~$190/mo</td>
+              <td class="verdict verdict-success">Works</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          Photon and wplaces costs are based on bare metal server pricing. Photon is fast and free, but 72% recall is unusable for AI agents. Google has the recall but costs $100M+/year at scale (or locks you into Gemini). wplaces is the only geocoder that's both good enough and affordable.
+        </p>
+
+        <h2>The Map Is a Bullshit Detector</h2>
+
+        <p>
+          This is what Wanderfugl does: plans hiking routes that account for elevation gain and trail difficulty, finds mountain huts along the way, calculates realistic travel times between destinations. Not just "find me a coffee shop"—actual wayfinding intelligence for anywhere in the world.
+        </p>
+
+        <p>
+          Most agents can't do this. They're stuck with whatever geo data they can license. ChatGPT uses Yelp—great for ramen in the Mission, useless for mountain huts near Zermatt. The coverage exists where the data provider's users exist: urban, US-centric, restaurant-heavy.
+        </p>
+
+        <p>
+          And there's a deeper problem: maps are bullshit detectors. Text recommendations have plausible deniability. "There's a great coffee shop near the station" sounds fine even if it's slightly wrong. You trust it, move on.
+        </p>
+
+        <p>
+          Put that same recommendation on a map and suddenly:
+        </p>
+
+        <ul>
+          <li>"Near" is exposed as a 20-minute walk</li>
+          <li>The pin is in the middle of a lake</li>
+          <li>The hallucinated restaurant is visibly inside a residential block</li>
+        </ul>
+
+        <p>
+          The visual medium demands precision. Every error is immediately, obviously wrong. 72% recall might be survivable in text. On a map, it's unusable.
+        </p>
+
+        <p>
+          This is the opportunity: build spatial intelligence that actually works globally, with enriched data—routing, distances, terrain, availability—not just points on a map.
+        </p>
+
+        <h2>What's Next</h2>
+
+        <p>
+          The failures in my benchmark are mostly data enrichment gaps, not retrieval failures. An alpine hut tagged only as <code>amenity=restaurant</code> doesn't get "mountain hut" in its embedding text. Fixable with smarter curation.
+        </p>
+
+        <p>
+          I don't see why I can't get to 99%.
+        </p>
+
+        <hr>
+
+        <p>
+          If you're building AI agents that touch the physical world—travel, logistics, local search, anything where "where" matters—and you're either bleeding money on Google or suffering with degraded quality, email me at <a href="mailto:me@jonready.com">me@jonready.com</a>.
+        </p>
+
+        <p>
+          Or try wplaces in action at <a href="https://wanderfugl.com" target="_blank">wanderfugl.com</a>—there's a waitlist, but I'm clearing it fast.
+        </p>
+      </div>
+    </article>
+  </main>
+
+</body>
+</html>

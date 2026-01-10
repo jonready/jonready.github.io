@@ -1,5 +1,11 @@
 [
   {
+    "title": "I Built a Geocoder for AI Agents Because I Couldn't Afford Google Maps",
+    "date": "January 9, 2026",
+    "url": "posts/geocoder-for-ai-agents.html",
+    "excerpt": "Traditional geocoders fail AI agents 28% of the time due to vocabulary mismatch. Google works but costs $3.65M/year at scale. I built something better."
+  },
+  {
     "title": "Everyone in Seattle Hates AI",
     "date": "December 3, 2025",
     "url": "posts/everyone-in-seattle-hates-ai.html",
