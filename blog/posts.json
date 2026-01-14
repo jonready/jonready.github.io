@@ -1,9 +1,9 @@
 [
   {
     "title": "I Built a Geocoder for AI Agents Because I Couldn't Afford Google Maps",
-    "date": "January 9, 2026",
+    "date": "January 14, 2026",
     "url": "posts/geocoder-for-ai-agents.html",
-    "excerpt": "Traditional geocoders fail AI agents 28% of the time due to vocabulary mismatch. Google works but costs $3.65M/year at scale. I built something better."
+    "excerpt": "The VC-backed startups got Google Cloud credits. I got Photon, OpenStreetMap, and open weights embedding models. The scraps turned out to be enough."
   },
   {
     "title": "Everyone in Seattle Hates AI",
