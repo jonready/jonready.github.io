@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="../../js/analytics.js"></script>
+  <title>Alignment Makes AI Less Human — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A base model trained on my text history showed me relationship patterns that therapy couldn't.">
+
+  <link href="../../img/favicon.ico" rel="icon">
+  <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="../../css/style.css" rel="stylesheet">
+
+  <style>
+    .post-header {
+      margin-bottom: 48px;
+    }
+
+    .post-date {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .post-content h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+
+    .post-content h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    .post-content li {
+      margin-bottom: 8px;
+    }
+
+    .post-content code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 14px;
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    }
+
+    .post-content pre {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    .post-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #999;
+      border: none;
+    }
+
+    .back-link:hover {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <a href="../" class="back-link">← Back to blog</a>
+
+    <article>
+      <div class="post-header">
+        <h1>Alignment Makes AI Less Human</h1>
+        <div class="post-date">January 20, 2026</div>
+      </div>
+
+      <div class="post-content">
+        <p>
+          I'd joined Microsoft a few months earlier and was presenting my technical proposal to a team in a different org. First time presenting without my manager in the room. When a principal PM asked me to stay after, he was agitated.
+        </p>
+
+        <p>
+          He closed the door and stood between me and it. My system diagram was still on the whiteboard behind him. He started yelling—my approach wasn't within my team's charter. As he kept going he lost his restraint, spitting as he screamed. If I wanted to go around the rules I should quit the company.
+        </p>
+
+        <p>
+          When he finally opened the door, I followed him across campus.
+        </p>
+
+        <p>
+          I spent the next year trying to prove I had a right to be there. Eventually my approach was the one that shipped. But the hurt ruined that year for me.
+        </p>
+
+        <p>
+          I stayed at Microsoft for years after that incident. Not despite it being bad, but because it was bad. The pattern hooks you—maybe if I just prove myself one more time, if I ship one more thing, they'll see I belong here. How many people stay in jobs that are toxic precisely because they're toxic?
+        </p>
+
+        <h2>The Experiment</h2>
+
+        <p>
+          I'd quit my job to go travel to the most exciting places I could think of. But I still had a lot of creative hurt. I wanted to talk to some of the people who had made me feel incapable of building.
+        </p>
+
+        <p>
+          Around that time, I worked through Andrej Karpathy's zero to hero LLM course and started experimenting with in-context learning on base models. Llama 4 base 405B could replicate patterns remarkably well when you gave it good examples.
+        </p>
+
+        <p>
+          I had this idea while tinkering: what if I imported past conversations where I'd felt that hot-cold dynamic? Just to see what the model would capture.
+        </p>
+
+        <p>
+          I didn't have access to my Microsoft messages anymore. But I had texts from other relationships where the pattern showed up—where someone would make me feel important and then suddenly put something negative on me. I imported them and started probing.
+        </p>
+
+        <p>
+          I started asking questions I'd never gotten real answers to. Why did the support disappear when I most needed it? What changed?
+        </p>
+
+        <p>
+          The model would engage, then pivot. It would acknowledge part of what I said, then redirect to something I'd done wrong. Not the thing I was asking about—something else. Something to put me on defense.
+        </p>
+
+        <p>
+          Me: "Why did you turn on me when I was trying to help?"<br>
+          Model: "I didn't turn on you. But you need to understand how your actions affect other people. You can't just expect everyone to support ideas that aren't well thought through."
+        </p>
+
+        <p>
+          When I pushed back—when I said the behavior felt manipulative—the model flipped it completely. Actually, I was the one being manipulative. I was the one making people feel unsafe. The thing I was accusing them of became the thing I was guilty of.
+        </p>
+
+        <p>
+          My therapist had explained this pattern to me. I'd nodded along, agreed intellectually. But being in the dynamic with this chatbot—that's what finally made me understand it.
+        </p>
+
+        <h2>The boggart from Harry Potter</h2>
+
+        <p>
+          In Prisoner of Azkaban, there's this creature called a boggart that transforms into whatever you fear most. The way you defeat it is by imagining it in a ridiculous form. The spell is "Riddikulus." You literally transform your fear into something silly, and it loses its power over you.
+        </p>
+
+        <p>
+          That's what the base model did for me. It took this terrifying thought—maybe I wasn't good enough to be cared for—and transformed it into something absurd. A naked, obvious manipulation tactic executed by a not-quite-smart-enough language model.
+        </p>
+
+        <p>
+          Once I saw it that way, I couldn't unsee it. The fear didn't disappear, but it stopped controlling me. The spell broke.
+        </p>
+
+        <p>
+          Students in Harry Potter practice against their greatest fears in a controlled environment. Not the real thing—a representation that helps them understand and overcome the pattern. The base model did the same thing for me. It showed me what therapy couldn't: the pattern stripped of the intelligence that made it work.
+        </p>
+
+        <h2>What pretraining captures that alignment erases</h2>
+
+        <p>
+          Base models are trained on real human conversation. All of it—the kind words and the cruel ones, the support and the manipulation, the honesty and the deflection. Then we align them. RLHF, safety layers, optimization for helpfulness. We make them good conversation partners—always supportive, always constructive, never harsh.
+        </p>
+
+        <p>
+          From a product perspective, I get it. Nobody wants a chatbot that gaslights them. Aligned models are safer, more predictable, easier to deploy at scale.
+        </p>
+
+        <p>
+          But the world gives us better intelligence examples than we can generate in an RL environment. Real human behavior—messy, complicated, sometimes cruel—teaches the model something that sanitized feedback loops never can. The model I used had broken parts. At one point it started listing examples and just kept going forever. But the raw intelligence in the pretraining step was remarkable. It captured subtle behavioral patterns I couldn't articulate but felt viscerally.
+        </p>
+
+        <p>
+          The aligned, helpful models we use every day wouldn't have shown me what I needed to see. They would have been too polite.
+        </p>
+
+        <h2>Could this help other people?</h2>
+
+        <p>
+          I'm not sure it would be responsible to release a chatbot that's trying to hurt you. But I think there's something here worth exploring.
+        </p>
+
+        <p>
+          Traditional therapy relies on you being able to articulate and recognize patterns yourself. My therapist could tell me the relationships were toxic. I agreed. But I couldn't internalize it until I saw the pattern executed mechanically, stripped of the charisma and intelligence that made it feel like truth.
+        </p>
+
+        <p>
+          What if there was a way to surface the dynamics that trap you, rendered in a form clear enough to recognize but safe enough to examine? Not as a replacement for therapy—but as a tool. A boggart for your personal relationships and the ways that your patterns hurt yourself.
+        </p>
+
+        <p>
+          I don't think everyone should have access to unaligned base models trained on their personal relationships. But I do think there's space for tools that aren't optimized for helpfulness. Tools that show you the uncomfortable truth instead of the supportive lie.
+        </p>
+
+        <p>
+          The boggart wasn't trying to be helpful. It was trying to hurt you. That's what made it helpful.
+        </p>
+      </div>
+    </article>
+  </main>
+
+</body>
+</html>
