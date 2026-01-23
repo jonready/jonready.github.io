@@ -1,5 +1,11 @@
 [
   {
+    "title": "Claude Code is a Footgun",
+    "date": "January 23, 2026",
+    "url": "posts/claude-code-is-a-footgun.html",
+    "excerpt": "How agentic coding tools can build impressive features while making your codebase incomprehensible."
+  },
+  {
     "title": "Alignment Makes AI Less Human",
     "date": "January 20, 2026",
     "url": "posts/alignment-makes-ai-less-human.html",
