@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jonathon Ready — Resume</title>
+<style>
+  @page {
+    margin: 0.5in 0.6in;
+    size: letter;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    color: #1a1a1a;
+    max-width: 7.5in;
+    margin: 0 auto;
+    padding: 0.5in 0.6in;
+  }
+  h1 {
+    font-size: 22pt;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .contact {
+    font-size: 9.5pt;
+    color: #444;
+    margin-bottom: 16px;
+  }
+  .contact a {
+    color: #444;
+    text-decoration: none;
+  }
+  .contact span { margin: 0 4px; color: #999; }
+  hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 14px 0;
+  }
+  h2 {
+    font-size: 11pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .job { margin-bottom: 14px; }
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+  .job-title {
+    font-size: 11pt;
+    font-weight: 700;
+  }
+  .job-meta {
+    font-size: 9.5pt;
+    color: #555;
+  }
+  ul {
+    margin: 6px 0 0 18px;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+  .edu-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 3px 12px;
+    font-size: 10pt;
+  }
+  .skills-label {
+    font-weight: 700;
+    color: #333;
+  }
+  @media print {
+    body { padding: 0; }
+  }
+  @page {
+    margin: 0.5in 0.6in;
+    size: letter;
+  }
+</style>
+</head>
+<body>
+
+<h1>Jonathon Ready</h1>
+<div class="contact">
+  Seattle, WA (nomadic)<span>|</span>
+  <a href="mailto:me@jonready.com">me@jonready.com</a><span>|</span>
+  <a href="https://jonready.com">jonready.com</a><span>|</span>
+  <a href="https://linkedin.com/in/jonready">linkedin.com/in/jonready</a>
+</div>
+
+<hr>
+
+<p style="font-size: 10.5pt; margin-bottom: 14px;">Spent the last year building an AI travel system full-time after five years at Microsoft. Currently most interested in the layer where you shape the model: training data, fine-tuning, RL, not just the application on top.</p>
+
+<hr>
+
+<h2>Experience</h2>
+
+<div class="job">
+  <div class="job-header">
+    <div class="job-title">Wanderfugl &mdash; Founder & Engineer</div>
+    <div class="job-meta">2024 &ndash; Present &nbsp;|&nbsp; Nomadic (Seattle home base)</div>
+  </div>
+  <ul>
+    <li>Created an AI travel system that turns natural-language queries into mapped, multi-day itineraries with real coordinates and routes</li>
+    <li>Designed a geospatial RAG system exposed as agent tools &mdash; the LLM dynamically retrieves and ranks places, trails, and routes from geographic databases rather than following a fixed pipeline</li>
+    <li>Built a semantic geocoder using neural embeddings over OSM data &mdash; the model provides GPS coordinates in tool calls and the geocoder searches nearby, achieving ~96% recall@n, within a percentage point of Google Places</li>
+    <li>Currently building synthetic data generation pipelines for geocoder training and exploring reinforcement learning for geospatial reasoning</li>
+  </ul>
+</div>
+
+<div class="job">
+  <div class="job-header">
+    <div class="job-title">Microsoft &mdash; Product Manager, Windows Performance</div>
+    <div class="job-meta">2019 &ndash; 2024 &nbsp;|&nbsp; Redmond, WA</div>
+  </div>
+  <ul>
+    <li>Owned technologies for rapidly servicing Windows, focused on update performance across 1B+ devices</li>
+    <li>Invented a new compression method that reduced Windows 11 update sizes by 40% &mdash; identified the technical opportunity, wrote the spec, drove implementation with engineers, and shipped to GA</li>
+    <li>Featured in the Windows 11 keynote; covered by ZDNet; reached #1 on Hacker News</li>
+    <li>Worked directly in the codebase with engineers on binary diffing, compression algorithms, and differential delivery optimization</li>
+    <li>Managed the end-to-end update delivery pipeline, balancing size reduction, install speed, and reliability at global scale</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2>Education</h2>
+
+<div class="edu-line">
+  <div><strong>Penn State University</strong> &mdash; B.S. Computer Science</div>
+  <div class="job-meta">2019</div>
+</div>
+
+<hr>
+
+<h2>Technical Skills</h2>
+
+<div class="skills-grid">
+  <div class="skills-label">Stack</div>
+  <div>Python, TypeScript, JavaScript, HTML/CSS, SQL, Git</div>
+  <div class="skills-label">AI/ML</div>
+  <div>RAG systems, semantic search, embedding models, LLM agents, synthetic data generation</div>
+  <div class="skills-label">Interest</div>
+  <div>Building end-to-end &mdash; from model training and data pipelines through to the product people use</div>
+</div>
+
+</body>
+</html>
