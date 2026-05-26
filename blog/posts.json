@@ -1,5 +1,11 @@
 [
   {
+    "title": "My Local LLM Rig (draft)",
+    "date": "May 25, 2026",
+    "url": "posts/local-llm-rig.html",
+    "excerpt": "The hardware and software stack behind training and serving open-weights models from my home office — 2x 3090s, 256GB of non-ECC RAM, and a Threadripper that's older than it should be."
+  },
+  {
     "title": "Claude Code is a Footgun",
     "date": "January 23, 2026",
     "url": "posts/claude-code-is-a-footgun.html",

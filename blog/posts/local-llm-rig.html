@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="../../js/analytics.js"></script>
+  <title>My Local LLM Rig (draft) — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The hardware and software stack behind training and serving open-weights models from my home office.">
+
+  <link href="../../img/favicon.ico" rel="icon">
+  <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="../../css/style.css" rel="stylesheet">
+
+  <style>
+    .post-header {
+      margin-bottom: 48px;
+    }
+
+    .post-date {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .post-content h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+
+    .post-content h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    .post-content li {
+      margin-bottom: 8px;
+    }
+
+    .post-content code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 14px;
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    }
+
+    .post-content pre {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    .post-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .post-content table.bench {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+
+    .post-content table.bench th,
+    .post-content table.bench td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: right;
+    }
+
+    .post-content table.bench th:first-child,
+    .post-content table.bench td:first-child {
+      text-align: left;
+    }
+
+    .post-content table.bench thead th {
+      border-bottom: 1px solid #ccc;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .post-content figure.chart {
+      margin: 24px 0;
+    }
+
+    .post-content figure.chart figcaption {
+      font-size: 13px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #999;
+      border: none;
+    }
+
+    .back-link:hover {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <a href="../" class="back-link">← Back to blog</a>
+
+    <article>
+      <div class="post-header">
+        <h1>My Local LLM Rig (draft)</h1>
+        <div class="post-date">May 25, 2026</div>
+      </div>
+
+      <div class="post-content">
+        <p>
+          Four months ago, every pass of agentic cleanup over the OpenStreetMap extract I use for <a href="geocoder-for-ai-agents.html">my geocoder</a> cost me around $400 in API spend. Today the same job runs on the box under my desk and the only line item is the electricity bill. This post is about the hardware that made that swap possible, what it's actually good for, and where the math still doesn't work.
+        </p>
+
+        <h2>The hardware</h2>
+
+        <p>
+          The machine ("ripper") is built around a Threadripper 3970X (32 cores) on an MSI TRX40 PRO 10G with 256GB of DDR4. The GPUs are a pair of RTX 3090s bridged with NVLink — one watercooled, one air-cooled — which gives me 48GB of pooled VRAM for the models that don't quite fit on a single card.
+        </p>
+
+        <figure style="margin: 24px 0;">
+          <img src="img/local-llm-rig.jpeg" alt="Inside of the workstation case: dual 3090s, one watercooled with a reservoir, one air-cooled, in a Fractal case." style="width: 100%; max-width: 600px; display: block; margin: 0 auto; border-radius: 4px;">
+        </figure>
+
+        <ul>
+          <li>2x NVIDIA RTX 3090 24GB, NVLink bridged</li>
+          <li>AMD Threadripper 3970X, 32 cores</li>
+          <li>MSI TRX40 PRO 10G motherboard</li>
+          <li>256GB DDR4 (non-ECC — more on that later)</li>
+          <li>Sustained inference temps hover around 50°C</li>
+        </ul>
+
+        <p>
+          One detail worth calling out: the GPUs are seated in the third and fourth PCIe slots, which on this board are wired x16/x8. That sounds like a downgrade until you remember NVLink — the bridge gives the cards ~112 GB/s of direct GPU-to-GPU bandwidth, which dwarfs anything PCIe is going to give you for cross-card traffic anyway. In practice this config beats a "proper" x16/x16 layout without NVLink for any workload that shards across both cards.
+        </p>
+
+        <p>
+          The bonus is that the top x16 slot stays open for a future two-slot card, and — more practically — two-slot NVLink bridges are <em>much</em> cheaper and easier to find than the three- or four-slot variants. If you're building a similar rig today, pick your slot spacing around what bridge you can actually buy.
+        </p>
+
+        <h2>What it cost</h2>
+
+        <p>
+          The whole thing came in under $4k for the core components, mostly because none of the headline parts were bought new:
+        </p>
+
+        <table class="bench">
+          <thead>
+            <tr><th>Part</th><th>Price</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2× RTX 3090 (both watercooled)</td><td>$2 000</td><td>Facebook Marketplace</td></tr>
+            <tr><td>Threadripper 3970X + MSI TRX40 PRO 10G + 256GB RAM</td><td>$1 200</td><td>Marketplace, "broken"</td></tr>
+            <tr><td>Case</td><td>$230</td><td>Retail</td></tr>
+            <tr><td>NVLink bridge (2-slot)</td><td>$200</td><td>Retail</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          The board-and-CPU deal is the fun story. The previous owner had the machine literally fall off the roof of a car in transit, decided it was scrap, and listed the combo at a steep discount with the 256GB of DDR4 still in the slots. When I picked it up nothing would post — but almost nothing was actually broken either. Every socketed component had partially walked out of place from the impact: the CPU in the socket, the DIMMs, the M.2 in its slot, the GPU. Reseating each one took about ten minutes. One of the eight memory sticks turned out to be genuinely dead and had to be replaced (~$220 for a matched module — more on RAM prices later), but everything else was fine. A 32-core Threadripper, a workstation board with 10G ethernet, <em>and</em> 256GB of RAM for $1 260 all-in is the kind of price you only get when the seller has already grieved the loss.
+        </p>
+
+        <p>
+          The 3090s were a luckier-than-deserved find too: a local crypto-mining operation was winding down and offloaded a pair of EK-blocked cards together. Watercooling is a meaningful upgrade for sustained inference — under all-day load they sit around 50&deg;C where the air-cooled reference cards I'd seen used were thermal-throttling into the 80s.
+        </p>
+
+        <p>
+          The NVLink bridge is the one line item that hurts: $200 of plastic and a few traces, and you basically have to buy it from a scalper because NVIDIA stopped making them. But for any workload that shards across both cards (tensor-parallel inference, FSDP training) the bridge pays for itself in not having to do cross-card traffic over the PCIe root complex.
+        </p>
+
+        <p>
+          Excluded from the table: PSU, storage, fans, fittings, the inevitable second loop of fittings after the first ones leaked, and the one replacement memory stick. Call it another $400–500 on top. So a fair all-in number is around <strong>$4 100</strong> for a workstation that comfortably serves a 35B MoE at 5 400 tok/s.
+        </p>
+
+        <h2>What it's good for</h2>
+
+        <p>
+          Two workloads pay for this machine. The first is fine-tuning small models — 2B to 8B parameters, mostly LoRA and full-SFT runs that finish overnight. The second is running long agentic jobs against the served model: in particular, cleaning and normalizing OpenStreetMap data for the geocoder, which means tens of millions of LLM calls per pass. That kind of token volume is exactly the wrong shape for paid APIs (lots of cheap, parallel, latency-tolerant requests) and exactly the right shape for a local server.
+        </p>
+
+        <p>
+          For serving, a 27B dense quant or a 35B MoE quant fits comfortably across both cards. A 14B at fp16 fits with room for KV cache. Anything 70B-class needs offloading and gets painful fast — at that point I'd rather just rent an H100 for the afternoon than fight it.
+        </p>
+
+        <h2>The software stack</h2>
+
+        <p>
+          The stack is PyTorch for training, vLLM for serving, and a small pile of local patches for the things that don't quite work out of the box on Ampere. The one footgun worth calling out up front: anything that touches Triton wants <code>CC=gcc</code> in the environment, or the conda-shipped compiler will fight the system Python headers and produce error messages that look unrelated to the actual problem. I've burned an entire evening on this twice now; it's the first thing I check when a fresh env explodes.
+        </p>
+
+        <p>
+          For agentic workloads, the OSM cleanup pipeline talks to vLLM over its OpenAI-compatible endpoint, so the same orchestration code I used to send to the paid API just points at <code>localhost:8000</code> instead. The 5 400 tok/s of aggregate throughput from the benchmarks above is the actual ceiling that pipeline runs against.
+        </p>
+
+        <h2>The non-ECC RAM problem</h2>
+
+        <p>
+          The 256GB of DDR4 in this box is non-ECC. I didn't think about it at build time — the sticks came with the marketplace bundle and I was excited to have 256GB at all — but it's the kind of thing that nags at you once you're running multi-day training jobs. Bit flips would be silent. The TRX40 platform doesn't expose <code>amd64_edac</code>, so the kernel has no visibility into memory errors even if they were happening. The only real check is a software memtest, which means taking the machine down for hours.
+        </p>
+
+        <p>
+          I had a stretch of unexplained training crashes earlier this month that sent me down this rabbit hole — loss spikes that didn't reproduce, an OOM that came back clean on re-run, that sort of thing. ECC turned out to be a red herring: memtest86+ found a single bad stick out of the eight, I swapped it for a matched replacement, and the crashes stopped. The replacement was <strong>$220</strong> for one 32GB module — RAM prices in 2026 are genuinely brutal, and an obscure-brand match for a six-year-old kit is not a cheap part anymore. The lesson wasn't "I need ECC" so much as "without ECC I had to take the machine down for hours of memtest to confirm what ECC would have flagged in seconds." Still going on the next-build list.
+        </p>
+
+        <h2>Benchmarks: MoE vs. dense at the same memory budget</h2>
+
+        <p>
+          To put numbers on what the rig actually delivers, I served two recent Qwen models with vLLM 0.20 (TP=2) and ran the canned <code>vllm bench serve</code> suite against each: <strong>Qwen3.5-35B-A3B</strong> (a 35B-parameter mixture-of-experts model with ~3B active per token, GPTQ Int4) and <strong>Qwen3.6-27B</strong> (a 27B dense model, AWQ Int4). Both at 16-bit KV cache. The MoE has more total parameters but only touches a fraction of them per token; the dense model is "smaller" by parameter count but every weight gets read every step.
+        </p>
+
+        <h3>Single-stream latency (warm, 512-in / 256-out)</h3>
+
+        <table class="bench">
+          <thead>
+            <tr><th>Model</th><th>Output tok/s</th><th>TTFT (ms)</th><th>Median ITL (ms)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Qwen3.5-35B-A3B (MoE, 3B active)</td><td>150</td><td>66</td><td>6.3</td></tr>
+            <tr><td>Qwen3.6-27B (dense)</td><td>63</td><td>279</td><td>14.3</td></tr>
+          </tbody>
+        </table>
+
+        <figure class="chart">
+          <svg viewBox="0 0 620 140" width="100%" role="img" aria-label="Bar chart: single-stream output tok/s, 35B-A3B 150, 27B dense 63">
+            <text x="0" y="16" font-family="Inter, sans-serif" font-size="13" fill="#666">Output tok/s, single stream (warm)</text>
+            <text x="0" y="55" font-family="Inter, sans-serif" font-size="13" fill="#1a1a1a">35B-A3B (MoE)</text>
+            <rect x="170" y="42" width="400" height="18" fill="#1a1a1a"/>
+            <text x="578" y="55" font-family="Inter, sans-serif" font-size="13" fill="#1a1a1a">150</text>
+            <text x="0" y="95" font-family="Inter, sans-serif" font-size="13" fill="#1a1a1a">27B (dense)</text>
+            <rect x="170" y="82" width="168" height="18" fill="#888"/>
+            <text x="346" y="95" font-family="Inter, sans-serif" font-size="13" fill="#1a1a1a">63</text>
+          </svg>
+          <figcaption>2.4× decode advantage at concurrency=1.</figcaption>
+        </figure>
+
+        <p>
+          Per-token decode is memory-bandwidth bound: the 35B-A3B only has to stream ~3B parameters out of HBM each step, while the dense 27B reads all 27B. The 9× ratio in working set doesn't quite translate 1:1 (there's constant overhead per step), but you can see it clearly in both the output rate and the inter-token latency. The MoE's TTFT is also lower because prefill is compute-bound and the active-parameter count drives FLOPs.
+        </p>
+
+        <h3>Parallel throughput (1024-in / 256-out, 500 prompts)</h3>
+
+        <table class="bench">
+          <thead>
+            <tr><th>Config</th><th>Total tok/s</th><th>Output tok/s</th><th>Median TTFT</th><th>P99 TTFT</th><th>Median TPOT</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>35B-A3B, conc=16</td><td>4 481</td><td>896</td><td>0.62 s</td><td>1.2 s</td><td>15 ms</td></tr>
+            <tr><td>35B-A3B, conc=32</td><td>5 417</td><td>1 083</td><td>0.72 s</td><td>10.3 s</td><td>25 ms</td></tr>
+            <tr><td>27B dense, conc=16</td><td>1 601</td><td>320</td><td>0.98 s</td><td>12.6 s</td><td>45 ms</td></tr>
+            <tr><td>27B dense, conc=32</td><td>1 817</td><td>363</td><td>2.74 s</td><td>13.5 s</td><td>76 ms</td></tr>
+          </tbody>
+        </table>
+
+        <figure class="chart">
+          <svg viewBox="0 0 620 220" width="100%" role="img" aria-label="Grouped bar chart: total throughput vs. concurrency for both models">
+            <text x="0" y="16" font-family="Inter, sans-serif" font-size="13" fill="#666">Total throughput (tok/s) — input+output</text>
+
+            <!-- y-axis labels and gridlines -->
+            <line x1="170" y1="40" x2="600" y2="40" stroke="#eee"/>
+            <line x1="170" y1="90" x2="600" y2="90" stroke="#eee"/>
+            <line x1="170" y1="140" x2="600" y2="140" stroke="#eee"/>
+            <line x1="170" y1="190" x2="600" y2="190" stroke="#333"/>
+            <text x="155" y="44" font-family="Inter, sans-serif" font-size="11" fill="#999" text-anchor="end">6k</text>
+            <text x="155" y="94" font-family="Inter, sans-serif" font-size="11" fill="#999" text-anchor="end">4k</text>
+            <text x="155" y="144" font-family="Inter, sans-serif" font-size="11" fill="#999" text-anchor="end">2k</text>
+            <text x="155" y="194" font-family="Inter, sans-serif" font-size="11" fill="#999" text-anchor="end">0</text>
+
+            <!-- 35B group at conc=16, conc=32 -->
+            <rect x="200" y="78" width="50" height="112" fill="#1a1a1a"/>
+            <text x="225" y="74" font-family="Inter, sans-serif" font-size="11" fill="#1a1a1a" text-anchor="middle">4481</text>
+            <rect x="260" y="55" width="50" height="135" fill="#1a1a1a"/>
+            <text x="285" y="51" font-family="Inter, sans-serif" font-size="11" fill="#1a1a1a" text-anchor="middle">5417</text>
+            <text x="255" y="210" font-family="Inter, sans-serif" font-size="12" fill="#1a1a1a" text-anchor="middle">35B-A3B (MoE)</text>
+
+            <!-- 27B group at conc=16, conc=32 -->
+            <rect x="400" y="150" width="50" height="40" fill="#888"/>
+            <text x="425" y="146" font-family="Inter, sans-serif" font-size="11" fill="#1a1a1a" text-anchor="middle">1601</text>
+            <rect x="460" y="145" width="50" height="45" fill="#888"/>
+            <text x="485" y="141" font-family="Inter, sans-serif" font-size="11" fill="#1a1a1a" text-anchor="middle">1817</text>
+            <text x="455" y="210" font-family="Inter, sans-serif" font-size="12" fill="#1a1a1a" text-anchor="middle">27B (dense)</text>
+
+            <!-- conc labels under bars -->
+            <text x="225" y="200" font-family="Inter, sans-serif" font-size="10" fill="#999" text-anchor="middle">c=16</text>
+            <text x="285" y="200" font-family="Inter, sans-serif" font-size="10" fill="#999" text-anchor="middle">c=32</text>
+            <text x="425" y="200" font-family="Inter, sans-serif" font-size="10" fill="#999" text-anchor="middle">c=16</text>
+            <text x="485" y="200" font-family="Inter, sans-serif" font-size="10" fill="#999" text-anchor="middle">c=32</text>
+          </svg>
+          <figcaption>The MoE pulls ahead even further under load: 3× the aggregate throughput at concurrency=32.</figcaption>
+        </figure>
+
+        <p>
+          The 27B saturates much earlier. Going from concurrency 16 to 32 only buys it 13% more throughput while pushing median TTFT from 1 s to 2.7 s — past its knee. The 35B-A3B is still climbing at 32 (and falling apart in tail latency, P99 TTFT of 10 s, but throughput-wise it's fine). For an interactive workload, the 35B-A3B's sweet spot on this hardware is around concurrency=16–24. For batch jobs where only total throughput matters, push it higher.
+        </p>
+
+        <p>
+          KV cache also matters here. The 27B at <code>--gpu-memory-utilization 0.85</code> with default 16-bit KV gets 61 152 tokens of cache total — enough for ~3.6 concurrent 65k requests, but at 32-way concurrency with 1 280-token contexts it's running near the edge. Switching to FP8 KV would double that with negligible quality cost.
+        </p>
+
+        <h3>Prefill: how prompt processing scales</h3>
+
+        <p>
+          For the 35B-A3B, I swept input length with <code>output_len=1</code> so prefill dominates, then divided input tokens by TTFT:
+        </p>
+
+        <table class="bench">
+          <thead>
+            <tr><th>Input length</th><th>TTFT (ms)</th><th>Prefill tok/s</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>512</td><td>333</td><td>1 536</td></tr>
+            <tr><td>1 024</td><td>510</td><td>2 007</td></tr>
+            <tr><td>2 048</td><td>913</td><td>2 242</td></tr>
+            <tr><td>4 096</td><td>1 838</td><td>2 228</td></tr>
+            <tr><td>8 192</td><td>4 061</td><td>2 017</td></tr>
+            <tr><td>16 384</td><td>8 570</td><td>1 911</td></tr>
+            <tr><td>32 768</td><td>19 161</td><td>1 710</td></tr>
+          </tbody>
+        </table>
+
+        <figure class="chart">
+          <svg viewBox="0 0 620 200" width="100%" role="img" aria-label="Line chart: prefill tok/s vs input length, peaks around 2-4k">
+            <text x="0" y="16" font-family="Inter, sans-serif" font-size="13" fill="#666">Single-stream prefill tok/s vs. input length (35B-A3B)</text>
+
+            <!-- axes -->
+            <line x1="60" y1="40" x2="60" y2="170" stroke="#ccc"/>
+            <line x1="60" y1="170" x2="600" y2="170" stroke="#ccc"/>
+
+            <!-- y ticks at 1500, 2000, 2300 -->
+            <line x1="58" y1="160" x2="62" y2="160" stroke="#999"/>
+            <text x="55" y="164" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="end">1500</text>
+            <line x1="58" y1="98" x2="62" y2="98" stroke="#999"/>
+            <text x="55" y="102" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="end">2000</text>
+            <line x1="58" y1="60" x2="62" y2="60" stroke="#999"/>
+            <text x="55" y="64" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="end">2300</text>
+
+            <!-- x positions evenly spaced for log2 input lengths 512..32768 -->
+            <!-- 7 points across 60..600 (width 540), step = 90 -->
+            <!-- 512:60, 1024:150, 2048:240, 4096:330, 8192:420, 16384:510, 32768:600 -->
+
+            <!-- y mapping: 1500→160, 2300→60, so y = 160 - (val-1500)/8 -->
+            <!-- 1536→160-4.5=155.5; 2007→96.6; 2242→67.3; 2228→69; 2017→95.4; 1911→108.6; 1710→133.75 -->
+
+            <polyline fill="none" stroke="#1a1a1a" stroke-width="2"
+              points="60,155 150,97 240,67 330,69 420,95 510,109 600,134"/>
+
+            <!-- data points -->
+            <circle cx="60" cy="155" r="3" fill="#1a1a1a"/>
+            <circle cx="150" cy="97" r="3" fill="#1a1a1a"/>
+            <circle cx="240" cy="67" r="3" fill="#1a1a1a"/>
+            <circle cx="330" cy="69" r="3" fill="#1a1a1a"/>
+            <circle cx="420" cy="95" r="3" fill="#1a1a1a"/>
+            <circle cx="510" cy="109" r="3" fill="#1a1a1a"/>
+            <circle cx="600" cy="134" r="3" fill="#1a1a1a"/>
+
+            <!-- x labels -->
+            <text x="60" y="186" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="middle">512</text>
+            <text x="150" y="186" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="middle">1k</text>
+            <text x="240" y="186" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="middle">2k</text>
+            <text x="330" y="186" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="middle">4k</text>
+            <text x="420" y="186" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="middle">8k</text>
+            <text x="510" y="186" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="middle">16k</text>
+            <text x="600" y="186" font-size="11" fill="#999" font-family="Inter, sans-serif" text-anchor="middle">32k</text>
+          </svg>
+          <figcaption>Peaks at 2–4k tokens, then attention's O(n²) cost starts eating into throughput.</figcaption>
+        </figure>
+
+        <p>
+          The shape is the expected one: short inputs don't saturate the kernels, the sweet spot lands around 2–4k tokens where everything's busy, and at 32k tokens you're firmly in attention-dominated territory and prefill drops ~25% from the peak.
+        </p>
+
+        <p>
+          Single-stream peaks around 2 240 tok/s. With concurrency, the aggregate prefill jumps to about <strong>12 100 tok/s</strong> — measured at both 2 048 and 4 096 input length with conc=32, which means I've hit the compute ceiling for this quantization on 2× 3090. Doubling the input didn't move the aggregate; it just doubled the per-request TTFT (5.2 s → 10.5 s). That's the GPU-bound regime.
+        </p>
+
+        <h3>What it costs to run</h3>
+
+        <p>
+          I checked the wall meter under the parallel benchmark: the whole machine peaks at <strong>1.04 kW</strong>. Per-token energy depends entirely on whether you're batching:
+        </p>
+
+        <ul>
+          <li>Single-stream (150 tok/s): about <strong>6.9 J/token</strong></li>
+          <li>Batch at concurrency=32 (5 417 tok/s total): about <strong>0.19 J/token</strong></li>
+        </ul>
+
+        <p>
+          That's a 36× swing from the same hardware — a strong argument for queueing requests where you can, and for treating "1 W per active token" as a rough lower bound when sizing power budgets.
+        </p>
+
+        <h3>The takeaway</h3>
+
+        <p>
+          On 2× 3090, a 35B-A3B MoE quantized to Int4 beats a 27B dense Int4 on every axis that matters: single-token latency, parallel throughput, prefill speed, and tail behavior. The MoE's smaller active set is the right architectural bet for memory-bandwidth-constrained consumer hardware, and the dense model's "smaller" parameter count is misleading once you account for what actually gets read every step. If you're picking what to serve locally and you have the VRAM for the full weights, prefer MoE quantizations.
+        </p>
+
+        <h2>What I'd do differently</h2>
+
+        <p>
+          ECC, for the reasons above. A board that exposes <code>amd64_edac</code> would be nice too — even without ECC, knowing whether the memory is misbehaving is a strict upgrade over guessing. I'd also leave room for a third GPU; the wattage budget on the PSU could support it and the 35B-A3B numbers above already suggest I'd happily feed a bigger MoE more VRAM. Beyond that, the honest answer is "stop building and rent H100s for the workloads that need them." This rig is great at the workloads that fit; for everything else, it's a slower, hotter version of a managed instance.
+        </p>
+
+        <h2>Was it worth it?</h2>
+
+        <p>
+          The numbers I care about: the OSM cleanup pass that used to cost me $400 in API spend now costs roughly a dollar of electricity per run (1 kW × ~10 hours × $0.11/kWh, give or take). The rig paid for itself in about ten runs. More importantly, the marginal cost of "let me re-run that with a slightly different prompt" went from "do I really want to spend $400 on this?" to "sure, kick it off before bed." That second number is the one that changed how I work.
+        </p>
+
+        <p>
+          The honest caveat is that this only holds for workloads that fit on 48GB of VRAM and don't need a frontier model to be useful. The day I need a 200B+ model in the loop, I'll be back on someone else's hardware. But for fine-tuning small models and grinding through large agentic jobs against a quantized 30B-class server, the box under my desk has been the best dollar-for-dollar bet I've made on this project.
+        </p>
+      </div>
+    </article>
+  </main>
+
+</body>
+</html>
