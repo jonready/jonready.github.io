@@ -1,5 +1,11 @@
 [
   {
+    "title": "If Claude Fable stops helping you, you'll never know",
+    "date": "June 9, 2026",
+    "url": "posts/claude-fable5-is-allowed-to-sabotage-your-app-if-youre-a-competitor.html",
+    "excerpt": "Anthropic's Claude Fable policy turns coding assistants into non-neutral infrastructure for product companies."
+  },
+  {
     "title": "My Local LLM Rig (draft)",
     "date": "May 25, 2026",
     "url": "posts/local-llm-rig.html",
