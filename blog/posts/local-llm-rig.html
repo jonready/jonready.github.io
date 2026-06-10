@@ -9,6 +9,7 @@
 
   <link href="../../img/favicon.ico" rel="icon">
   <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link rel="alternate" type="application/rss+xml" title="Jonathon Ready Blog" href="https://jonready.com/blog/feed.xml">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="../../css/style.css" rel="stylesheet">
@@ -118,6 +119,24 @@
 
     .back-link:hover {
       color: #2c3e50;
+    }
+
+    .post-rss {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .post-rss a {
+      color: #777;
+      border-bottom: 1px dotted #bbb;
+    }
+
+    .post-rss a:hover {
+      color: #2c3e50;
+      border-bottom-color: #2c3e50;
     }
   </style>
 </head>
@@ -435,6 +454,8 @@
           The honest caveat is that this only holds for workloads that fit on 48GB of VRAM and don't need a frontier model to be useful. The day I need a 200B+ model in the loop, I'll be back on someone else's hardware. But for fine-tuning small models and grinding through large agentic jobs against a quantized 30B-class server, the box under my desk has been the best dollar-for-dollar bet I've made on this project.
         </p>
       </div>
+
+      <p class="post-rss"><a href="../feed.xml">RSS feed</a> for future posts.</p>
     </article>
   </main>
 

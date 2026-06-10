@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Jonathon Ready Blog</title>
+    <link>https://jonready.com/blog/</link>
+    <description>Thoughts on building, exploring, and technology.</description>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 09 Jun 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>If Claude Fable stops helping you, you&apos;ll never know</title>
+      <link>https://jonready.com/blog/posts/claude-fable5-is-allowed-to-sabotage-your-app-if-youre-a-competitor.html</link>
+      <guid>https://jonready.com/blog/posts/claude-fable5-is-allowed-to-sabotage-your-app-if-youre-a-competitor.html</guid>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 GMT</pubDate>
+      <description>Anthropic&apos;s Claude Fable policy turns coding assistants into non-neutral infrastructure for product companies.</description>
+    </item>
+
+    <item>
+      <title>My Local LLM Rig (draft)</title>
+      <link>https://jonready.com/blog/posts/local-llm-rig.html</link>
+      <guid>https://jonready.com/blog/posts/local-llm-rig.html</guid>
+      <pubDate>Mon, 25 May 2026 00:00:00 GMT</pubDate>
+      <description>The hardware and software stack behind training and serving open-weights models from my home office — 2x 3090s, 256GB of non-ECC RAM, and a Threadripper that&apos;s older than it should be.</description>
+    </item>
+
+    <item>
+      <title>Claude Code is a Footgun</title>
+      <link>https://jonready.com/blog/posts/claude-code-is-a-footgun.html</link>
+      <guid>https://jonready.com/blog/posts/claude-code-is-a-footgun.html</guid>
+      <pubDate>Fri, 23 Jan 2026 00:00:00 GMT</pubDate>
+      <description>How agentic coding tools can build impressive features while making your codebase incomprehensible.</description>
+    </item>
+
+    <item>
+      <title>Alignment Makes AI Less Human</title>
+      <link>https://jonready.com/blog/posts/alignment-makes-ai-less-human.html</link>
+      <guid>https://jonready.com/blog/posts/alignment-makes-ai-less-human.html</guid>
+      <pubDate>Tue, 20 Jan 2026 00:00:00 GMT</pubDate>
+      <description>A base model trained on my text history showed me relationship patterns that therapy couldn&apos;t.</description>
+    </item>
+
+    <item>
+      <title>I Built a Geocoder for AI Agents Because I Couldn&apos;t Afford Google Maps</title>
+      <link>https://jonready.com/blog/posts/geocoder-for-ai-agents.html</link>
+      <guid>https://jonready.com/blog/posts/geocoder-for-ai-agents.html</guid>
+      <pubDate>Wed, 14 Jan 2026 00:00:00 GMT</pubDate>
+      <description>The VC-backed startups got Google Cloud credits. I got Photon, OpenStreetMap, and open weights embedding models. The scraps turned out to be enough.</description>
+    </item>
+
+    <item>
+      <title>Everyone in Seattle Hates AI</title>
+      <link>https://jonready.com/blog/posts/everyone-in-seattle-hates-ai.html</link>
+      <guid>https://jonready.com/blog/posts/everyone-in-seattle-hates-ai.html</guid>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 GMT</pubDate>
+      <description>How Microsoft&apos;s AI strategy turned brilliant engineers against the technology they should be building.</description>
+    </item>
+
+    <item>
+      <title>Visualizing bsdiff: The Delta Compression Algorithm Used by macOS and Google Chrome</title>
+      <link>https://jonready.com/blog/posts/visualizing-bsdiff.html</link>
+      <guid>https://jonready.com/blog/posts/visualizing-bsdiff.html</guid>
+      <pubDate>Sun, 30 Nov 2025 00:00:00 GMT</pubDate>
+      <description>An interactive exploration of the bsdiff binary diff algorithm used for software updates in macOS and Chrome.</description>
+    </item>
+  </channel>
+</rss>

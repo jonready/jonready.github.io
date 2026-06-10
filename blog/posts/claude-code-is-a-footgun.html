@@ -9,6 +9,7 @@
 
   <link href="../../img/favicon.ico" rel="icon">
   <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link rel="alternate" type="application/rss+xml" title="Jonathon Ready Blog" href="https://jonready.com/blog/feed.xml">
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="../../css/style.css" rel="stylesheet">
@@ -83,6 +84,24 @@
 
     .back-link:hover {
       color: #2c3e50;
+    }
+
+    .post-rss {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .post-rss a {
+      color: #777;
+      border-bottom: 1px dotted #bbb;
+    }
+
+    .post-rss a:hover {
+      color: #2c3e50;
+      border-bottom-color: #2c3e50;
     }
   </style>
 </head>
@@ -161,6 +180,8 @@
           Fun fact: This blog is actually a static site that's entirely rewritten by Claude Code each time I push it, because I can't find a framework I like. So feel free to call me a hypocrite.
         </p>
       </div>
+
+      <p class="post-rss"><a href="../feed.xml">RSS feed</a> for future posts.</p>
     </article>
   </main>
 
