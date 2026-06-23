@@ -1,5 +1,11 @@
 [
   {
+    "title": "Two Ancient 3090s vs a $9,000 Blackwell Card",
+    "date": "June 23, 2026",
+    "url": "posts/two-3090s-vs-a-9000-dollar-gpu.html",
+    "excerpt": "I benchmarked my dual-3090 rig against a pair of RTX PRO 6000 Blackwell cards. The five-year-old hardware is ~60% as fast as a $9,000 GPU on decode — until you ask it to do prefill, or load a model that doesn't fit in 48GB."
+  },
+  {
     "title": "If Claude Fable stops helping you, you'll never know",
     "date": "June 9, 2026",
     "url": "posts/claude-fable5-is-allowed-to-sabotage-your-app-if-youre-a-competitor.html",

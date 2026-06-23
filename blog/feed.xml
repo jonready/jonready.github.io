@@ -5,7 +5,15 @@
     <link>https://jonready.com/blog/</link>
     <description>Thoughts on building, exploring, and technology.</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 09 Jun 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 23 Jun 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>Two Ancient 3090s vs a $9,000 Blackwell Card</title>
+      <link>https://jonready.com/blog/posts/two-3090s-vs-a-9000-dollar-gpu.html</link>
+      <guid>https://jonready.com/blog/posts/two-3090s-vs-a-9000-dollar-gpu.html</guid>
+      <pubDate>Mon, 23 Jun 2026 00:00:00 GMT</pubDate>
+      <description>I benchmarked my dual-3090 rig against a pair of RTX PRO 6000 Blackwell cards. The five-year-old hardware is ~60% as fast as a $9,000 GPU on decode — until you ask it to do prefill, or load a model that doesn&apos;t fit in 48GB.</description>
+    </item>
 
     <item>
       <title>If Claude Fable stops helping you, you&apos;ll never know</title>

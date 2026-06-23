@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="../../js/analytics.js"></script>
+  <title>Two Ancient 3090s vs a $9,000 Blackwell Card — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="I benchmarked my dual-3090 rig against a pair of RTX PRO 6000 Blackwell cards. The old hardware is shockingly competitive — until you ask it to do the one thing it can't.">
+
+  <link href="../../img/favicon.ico" rel="icon">
+  <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link rel="alternate" type="application/rss+xml" title="Jonathon Ready Blog" href="https://jonready.com/blog/feed.xml">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="../../css/style.css" rel="stylesheet">
+
+  <style>
+    .post-header {
+      margin-bottom: 48px;
+    }
+
+    .post-date {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .post-content h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+
+    .post-content h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    .post-content li {
+      margin-bottom: 8px;
+    }
+
+    .post-content code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 14px;
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    }
+
+    .post-content pre {
+      background: #f5f5f5;
+      padding: 16px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    .post-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .post-content table.bench {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+
+    .post-content table.bench th,
+    .post-content table.bench td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: right;
+    }
+
+    .post-content table.bench th:first-child,
+    .post-content table.bench td:first-child {
+      text-align: left;
+    }
+
+    .post-content table.bench thead th {
+      border-bottom: 1px solid #ccc;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .post-content figure.chart {
+      margin: 24px 0;
+    }
+
+    .post-content figure.chart figcaption {
+      font-size: 13px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #999;
+      border: none;
+    }
+
+    .back-link:hover {
+      color: #2c3e50;
+    }
+
+    .post-rss {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .post-rss a {
+      color: #777;
+      border-bottom: 1px dotted #bbb;
+    }
+
+    .post-rss a:hover {
+      color: #2c3e50;
+      border-bottom-color: #2c3e50;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <a href="../" class="back-link">← Back to blog</a>
+
+    <article>
+      <div class="post-header">
+        <h1>Two Ancient 3090s vs a $9,000 Blackwell Card</h1>
+        <div class="post-date">June 23, 2026</div>
+      </div>
+
+      <div class="post-content">
+        <p>
+          A while back I <a href="local-llm-rig.html">wrote up the rig under my desk</a> — two NVLink-bridged RTX 3090s, a Threadripper that was old when I bought it, and a stubborn refusal to keep paying API bills. The 3090 is a 2020 card. The dies are five years old. So when I got temporary access to a box with two RTX PRO 6000 Blackwell Server Edition cards — the current top of NVIDIA's professional stack, roughly $9,000 <em>each</em> — I expected the benchmark to be a humiliation.
+        </p>
+
+        <p>
+          It wasn't. The headline, which I'll spend the rest of the post defending and then bounding: <strong>for the workload I actually run, two five-year-old 3090s are about 60% as fast as one of the most expensive GPUs you can buy.</strong> And there's a real, boring reason why — it's not a fluke.
+        </p>
+
+        <h2>The two machines</h2>
+
+        <table class="bench">
+          <thead>
+            <tr><th>&nbsp;</th><th>My rig ("ripper")</th><th>The Blackwell box</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>GPUs</td><td>2× RTX 3090, 48GB pooled</td><td>2× RTX PRO 6000, 192GB pooled</td></tr>
+            <tr><td>Architecture</td><td>Ampere (2020)</td><td>Blackwell (2025)</td></tr>
+            <tr><td>Mem bandwidth (aggregate)</td><td>~1,872 GB/s</td><td>~1,790 GB/s</td></tr>
+            <tr><td>4-bit format</td><td>GPTQ-Int4</td><td>NVFP4</td></tr>
+            <tr><td>GPU cost (rough)</td><td>~$1,600 used</td><td>~$18,000 new</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          Look at the bandwidth row, because it's the whole story. Token <em>generation</em> — the part you feel when you're chatting with a model — is almost entirely memory-bandwidth-bound. Every token, you stream the active weights out of VRAM. And two 3090s, ganged together, push <strong>more aggregate bandwidth than a single PRO 6000.</strong> The 2020 silicon and the 2025 silicon are, on the one axis that governs decode speed, basically tied. NVIDIA spent five years and a lot of die area on things that don't help you generate the next token.
+        </p>
+
+        <h2>The benchmark</h2>
+
+        <p>
+          Same methodology as the original rig post: <code>vllm bench serve</code> against a 35B-A3B MoE (the same model class I run day to day), measuring single-stream latency, parallel throughput, and prefill. My rig's numbers are from that post — Int4, 16-bit KV. The Blackwell numbers I measured myself on the new box with NVFP4 weights and a matching 16-bit KV cache. I ran the 35B on a <em>single</em> PRO 6000, because the whole point is "my two cheap cards vs one of their expensive ones."
+        </p>
+
+        <h3>Single-stream decode (512 in / 256 out)</h3>
+
+        <table class="bench">
+          <thead>
+            <tr><th>Metric</th><th>2× 3090</th><th>1× PRO 6000</th><th>3090 as %</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Output tok/s</td><td>150</td><td>210</td><td>71%</td></tr>
+            <tr><td>Time to first token</td><td>66 ms</td><td>30 ms</td><td>—</td></tr>
+            <tr><td>Inter-token latency</td><td>6.3 ms</td><td>4.7 ms</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Parallel throughput (1024 in / 256 out, 500 prompts)</h3>
+
+        <table class="bench">
+          <thead>
+            <tr><th>Concurrency</th><th>2× 3090 (total tok/s)</th><th>1× PRO 6000 (total tok/s)</th><th>3090 as %</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>16</td><td>4,481</td><td>6,898</td><td>65%</td></tr>
+            <tr><td>32</td><td>5,417</td><td>9,674</td><td>56%</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          Across the decode metrics that's a band of roughly 56–71%. Call it 60%. A pair of cards I could buy used for about $1,600 delivers 60% of the token throughput of a $9,000 GPU. On dollars-per-token for short-prompt serving, the old rig doesn't just compete — it <em>wins</em>, and it isn't close.
+        </p>
+
+        <h2>Where the wheels come off</h2>
+
+        <p>
+          I'd be doing the same thing I accused the "smaller dense model" of in the last post — quoting the flattering number and hiding the rest — if I stopped there. The 60% holds for one specific shape of work: short prompts, lots of generated tokens. The moment the workload changes, so does the verdict.
+        </p>
+
+        <h3>Prefill is a massacre</h3>
+
+        <p>
+          Prefill — chewing through the prompt before the first token — is <em>compute</em>-bound, not bandwidth-bound, and this is where Blackwell's FP4 tensor cores show up to work. At an 8K-token prompt my rig does about 2,000 tok/s of prefill. The PRO 6000 does about <strong>34,900</strong>.
+        </p>
+
+        <table class="bench">
+          <thead>
+            <tr><th>Prompt length</th><th>2× 3090 prefill tok/s</th><th>1× PRO 6000 prefill tok/s</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2,048</td><td>2,242</td><td>30,399</td></tr>
+            <tr><td>8,192</td><td>2,017</td><td>34,868</td></tr>
+            <tr><td>32,768</td><td>1,710</td><td>28,879</td></tr>
+          </tbody>
+        </table>
+
+        <p>
+          That's not 60%. That's roughly <strong>6%</strong> — a 17× gap. For chat, prefill is a rounding error. For RAG, long-context summarization, or any agentic loop that re-reads a big context every step, prefill <em>is</em> the workload, and the old rig falls off a cliff. The cheap-hardware story is really a "your prompts are short" story.
+        </p>
+
+        <h3>And there's a model it simply can't load</h3>
+
+        <p>
+          While I had the box I also ran a 122B-A10B MoE in NVFP4 — 71GB of weights, native FP4 on both Blackwell cards. It served 102 tok/s single-stream and held a 3.2M-token KV cache. My rig's verdict on this model isn't a percentage. It's a 71GB-of-weights-into-48GB-of-VRAM error. You can't run it at all. 192GB of pooled VRAM doesn't make the Blackwell box "better" here so much as it puts it in a different category — it can hold models my rig will never see.
+        </p>
+
+        <h2>A note on the quant, and on fp8 KV</h2>
+
+        <p>
+          Two honesty notes for anyone trying to reproduce this. First, the quants aren't identical and can't be: Ampere has no FP4, so my rig runs GPTQ-Int4 while the Blackwell box runs NVFP4. Same 4 bits per weight, different math. For the 35B, NVFP4's linear layers are weight-only (W4A16) and actually fall back to a Marlin kernel even on Blackwell; the 122B runs true native FP4. So "NVFP4" isn't one thing.
+        </p>
+
+        <p>
+          Second, I re-ran the Blackwell numbers with an fp8 KV cache, since that's what the model card recommends. At these batch sizes it was a wash on speed — every throughput metric landed within run-to-run noise. What fp8 KV actually bought was capacity: about 1.8× more KV cache (2.9M → 5.2M tokens on the 35B). It's a headroom upgrade for high concurrency or long context, not a speed knob. So the comparison above, on 16-bit KV both sides, is the fair one.
+        </p>
+
+        <p>
+          One more caveat against my own favor: the rented box is a cloud instance whose container blocked direct GPU-to-GPU P2P, so its two-card runs route tensor-parallel traffic through host memory and are slower than NVLink hardware would be. That only handicaps the <em>Blackwell</em> multi-GPU numbers, though — the single-card 35B comparison, the one the headline rests on, is unaffected.
+        </p>
+
+        <h2>The takeaway</h2>
+
+        <p>
+          I went in expecting the five-year-old cards to get embarrassed and came out thinking the opposite: Ampere's memory bandwidth aged remarkably well, and modern MoE models — with their tiny active parameter sets — happen to lean on exactly that strength. I bought bandwidth in 2020 and the workload walked over to meet it. For local chat and grinding through agentic jobs with modest prompts, two used 3090s at ~60% of a flagship's decode is the best dollar-for-dollar bet in the building.
+        </p>
+
+        <p>
+          The fair way to say it: these aren't a fast card and a slow card. They're two machines built for different jobs that happen to overlap on the cheap one. The PRO 6000 box is <em>for</em> the 35,000 tok/s prefill and the 122B model — neither of which my rig can touch. But if your prompts are short and your models fit in 48GB, the expensive hardware is solving a problem you don't have. The day I need a 200B model or 30k-token prompts in the loop, I'll rent Blackwell. Until then, the 3090s stay under the desk, and they've earned it.
+        </p>
+      </div>
+
+      <p class="post-rss"><a href="../feed.xml">RSS feed</a> for future posts.</p>
+    </article>
+  </main>
+
+</body>
+</html>
