@@ -1,5 +1,11 @@
 [
   {
+    "title": "The End of Consumer AI Winter",
+    "date": "July 10, 2026",
+    "url": "posts/the-end-of-consumer-ai-winter.html",
+    "excerpt": "For a couple of years it looked like AI had left consumers behind — the good models lived in someone else's datacenter and you rented access by the token. That era is quietly ending, and the thaw is showing up under desks, not in datacenters."
+  },
+  {
     "title": "If Claude Fable stops helping you, you'll never know",
     "date": "June 9, 2026",
     "url": "posts/claude-fable5-is-allowed-to-sabotage-your-app-if-youre-a-competitor.html",
