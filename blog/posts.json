@@ -1,9 +1,9 @@
 [
   {
-    "title": "Two Ancient 3090s vs a $9,000 Blackwell Card",
-    "date": "June 23, 2026",
-    "url": "posts/two-3090s-vs-a-9000-dollar-gpu.html",
-    "excerpt": "I benchmarked my dual-3090 rig against a pair of RTX PRO 6000 Blackwell cards. The five-year-old hardware is ~60% as fast as a $9,000 GPU on decode — until you ask it to do prefill, or load a model that doesn't fit in 48GB."
+    "title": "The End of Consumer AI Winter",
+    "date": "July 10, 2026",
+    "url": "posts/the-end-of-consumer-ai-winter.html",
+    "excerpt": "For a couple of years it looked like AI had left consumers behind — the good models lived in someone else's datacenter and you rented access by the token. That era is quietly ending, and the thaw is showing up under desks, not in datacenters."
   },
   {
     "title": "If Claude Fable stops helping you, you'll never know",
