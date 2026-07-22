@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="../../js/analytics.js"></script>
+  <title>Agent Swarms Are Great for Local AI — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Single-stream vibecoding makes a local LLM rig look like an expensive Chromebook. Agent swarms flip the tokenomics — and suddenly the box under the desk pays for itself.">
+
+  <link href="../../img/favicon.ico" rel="icon">
+  <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link rel="alternate" type="application/rss+xml" title="Jonathon Ready Blog" href="https://jonready.com/blog/feed.xml">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="../../css/style.css" rel="stylesheet">
+
+  <style>
+    .post-header {
+      margin-bottom: 28px;
+    }
+
+    .post-date {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .post-hero {
+      margin: 0 0 40px;
+    }
+
+    .post-hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+
+    .post-content h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+
+    .post-content h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    .post-content li {
+      margin-bottom: 8px;
+    }
+
+    .post-content code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 14px;
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    }
+
+    .post-content table.bench {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+
+    .post-content table.bench th,
+    .post-content table.bench td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    .post-content table.bench th:first-child,
+    .post-content table.bench td:first-child {
+      text-align: left;
+    }
+
+    .post-content table.bench thead th {
+      border-bottom: 1px solid #ccc;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .pull-quote {
+      margin: 28px 0;
+      padding: 16px 22px;
+      border-left: 3px solid #2c3e50;
+      border-radius: 6px;
+      background: rgba(44, 62, 80, 0.06);
+      font-size: 18px;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #999;
+      border: none;
+    }
+
+    .back-link:hover {
+      color: #2c3e50;
+    }
+
+    .post-rss {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .post-rss a {
+      color: #777;
+      border-bottom: 1px dotted #bbb;
+    }
+
+    .post-rss a:hover {
+      color: #2c3e50;
+      border-bottom-color: #2c3e50;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <a href="../" class="back-link">← Back to blog</a>
+
+    <article>
+      <div class="post-header">
+        <h1>Agent Swarms Are Great for Local AI</h1>
+        <div class="post-date">July 21, 2026</div>
+      </div>
+
+      <figure class="post-hero">
+        <img src="../../img/bees.jpg" alt="A swarm of honeybees in flight over a green surface.">
+      </figure>
+
+      <div class="post-content">
+        <p>
+          The tokenomics for local AI development are really bad. In order to run a coding agent with anything close to decent performance you need enough VRAM to hold the model and context in memory, which is really expensive. For Qwen3.6-35B-A3B you'd ideally have an NVIDIA 5090 or 2×3090s. In <a href="local-llm-rig.html">my testing</a> I was only able to get about 2k tok/s input and 150 tok/s output in single-stream development. This is ok, but assuming you're doing 150 tok/s for an hour a day you're only achieving about 7.2 million input tokens (80% cached) and 540k output tokens.
+        </p>
+
+        <p>
+          Which, paying <a href="https://openrouter.ai/qwen/qwen3.6-35b-a3b" target="_blank" rel="noopener">API rates for Qwen 3.6 on OpenRouter</a>, you'd spend about <strong>$0.80</strong> for the session — at $0.13/M input and $1.00/M output, with cached tokens charged at roughly a tenth of the input rate. Meaning that your $5k or so of computer might as well be a Chromebook.
+        </p>
+
+        <h2>Agent swarms change the tokenomics</h2>
+
+        <p>
+          That example was for a single-hour session at concurrency one. This is how traditional vibecoding works, but it's being replaced with the newer idea of agent swarms, where a task gets delegated and fanned out to a much larger number of agents. The big labs really like this because it can drastically increase token spend. But it also finally makes local LLM rigs worth it.
+        </p>
+
+        <p>
+          Let's assume the bulk of your one-hour session was with an average of 32 background agents doing different tasks, at an average of 20k tok/s input (14k cache, 6k new reads) and 1k tok/s out — typical speed I get on the <a href="local-llm-rig.html">2×3090 rig</a>. Paying API rates for Qwen 3.6 on OpenRouter, you'd need about <strong>$7.06 per session</strong> for this kind of agentic engineering.
+        </p>
+
+        <table class="bench">
+          <thead>
+            <tr>
+              <th>One hour of work</th>
+              <th>Single agent</th>
+              <th>Swarm (~32)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Input</td>
+              <td>7.2M (80% cached)</td>
+              <td>72M (70% cached)</td>
+            </tr>
+            <tr>
+              <td>Output</td>
+              <td>540k</td>
+              <td>3.6M</td>
+            </tr>
+            <tr>
+              <td>Paying API rates for <a href="https://openrouter.ai/qwen/qwen3.6-35b-a3b" target="_blank" rel="noopener">Qwen 3.6</a> on OpenRouter</td>
+              <td>$0.80</td>
+              <td>$7.06</td>
+            </tr>
+            <tr>
+              <td>Same tokens on Sonnet 5</td>
+              <td>~$9.40</td>
+              <td>~$89</td>
+            </tr>
+            <tr>
+              <td>Cost on the local rig</td>
+              <td>~$0.08</td>
+              <td>~$0.11</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="bench">
+          <thead>
+            <tr>
+              <th>Same pace, 8h/day for a month</th>
+              <th>Single agent</th>
+              <th>Swarm (~32)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Paying API rates for <a href="https://openrouter.ai/qwen/qwen3.6-35b-a3b" target="_blank" rel="noopener">Qwen 3.6</a> on OpenRouter</td>
+              <td>~$192</td>
+              <td>~$1,700</td>
+            </tr>
+            <tr>
+              <td>Sonnet 5</td>
+              <td>~$2,260</td>
+              <td>~$21,400</td>
+            </tr>
+            <tr>
+              <td>Local rig (electricity)</td>
+              <td>~$19</td>
+              <td>~$26</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          While the patterns of agent loops and agent graphs get more and more popular, it actually increases the power of local AI instead of diminishing it. Because for the first time local AI has a decent way to saturate GPUs.
+        </p>
+      </div>
+
+      <p class="post-rss"><a href="../feed.xml">RSS feed</a> for future posts.</p>
+    </article>
+  </main>
+
+</body>
+</html>

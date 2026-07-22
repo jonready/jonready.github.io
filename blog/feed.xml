@@ -5,7 +5,15 @@
     <link>https://jonready.com/blog/</link>
     <description>Thoughts on building, exploring, and technology.</description>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Jul 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 21 Jul 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>Agent Swarms Are Great for Local AI</title>
+      <link>https://jonready.com/blog/posts/agent-swarms-are-great-for-local-ai.html</link>
+      <guid>https://jonready.com/blog/posts/agent-swarms-are-great-for-local-ai.html</guid>
+      <pubDate>Tue, 21 Jul 2026 00:00:00 GMT</pubDate>
+      <description>Single-stream vibecoding makes a local LLM rig look like an expensive Chromebook. Agent swarms flip the tokenomics — and suddenly the box under the desk pays for itself.</description>
+    </item>
 
     <item>
       <title>The End of Consumer AI Winter</title>
