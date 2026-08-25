@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="../../js/analytics.js"></script>
+  <title>vllm-ios: 88% Faster Multi-Agent Inference on iOS — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Announcing vllm-ios: vLLM-style continuous batching for iPhone, native Swift on MLX, no Python. 88% faster than llama.cpp at 8 concurrent streams with identical weights.">
+
+  <link href="../../img/favicon.ico" rel="icon">
+  <link href="../../img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link rel="alternate" type="application/rss+xml" title="Jonathon Ready Blog" href="https://jonready.com/blog/feed.xml">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="../../css/style.css" rel="stylesheet">
+
+  <style>
+    .post-header {
+      margin-bottom: 28px;
+    }
+
+    .post-date {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .demo-row {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      margin: 24px 0;
+    }
+
+    .demo-row video {
+      width: 185px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      display: block;
+    }
+
+    .demo-row .demo-text {
+      font-size: 15px;
+      color: #444;
+    }
+
+    .demo-row .demo-text p {
+      margin-bottom: 10px;
+    }
+
+    .demo-row .demo-text ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .demo-row .demo-text li {
+      margin-bottom: 6px;
+    }
+
+    .demo-caption {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+      text-align: center;
+      width: 185px;
+    }
+
+    @media (max-width: 560px) {
+      .demo-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      .demo-row .demo-text {
+        text-align: left;
+      }
+    }
+
+    .post-inline-figure {
+      margin: 24px auto;
+      max-width: 420px;
+    }
+
+    .post-inline-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+
+    .post-inline-figure figcaption {
+      font-size: 13px;
+      color: #999;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    .post-content h2 {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-top: 32px;
+      margin-bottom: 16px;
+    }
+
+    .post-content h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 24px;
+      margin-bottom: 12px;
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+
+    .post-content li {
+      margin-bottom: 8px;
+    }
+
+    .post-content code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 14px;
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    }
+
+    .post-content table.bench {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 14px;
+    }
+
+    .post-content table.bench th,
+    .post-content table.bench td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    .post-content table.bench th:first-child,
+    .post-content table.bench td:first-child {
+      text-align: left;
+    }
+
+    .post-content table.bench thead th {
+      border-bottom: 1px solid #ccc;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .pull-quote {
+      margin: 28px 0;
+      padding: 16px 22px;
+      border-left: 3px solid #2c3e50;
+      border-radius: 6px;
+      background: rgba(44, 62, 80, 0.06);
+      font-size: 18px;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    .tldr {
+      margin: 0 0 28px;
+      padding: 16px 20px;
+      border-radius: 8px;
+      background: #eef2ff;
+      font-size: 16px;
+      color: #374151;
+      line-height: 1.55;
+    }
+
+    .tldr-label {
+      font-weight: 700;
+      color: #6366f1;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #999;
+      border: none;
+    }
+
+    .back-link:hover {
+      color: #2c3e50;
+    }
+
+    .post-rss {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 14px;
+      color: #999;
+    }
+
+    .post-rss a {
+      color: #777;
+      border-bottom: 1px dotted #bbb;
+    }
+
+    .post-rss a:hover {
+      color: #2c3e50;
+      border-bottom-color: #2c3e50;
+    }
+
+    .github-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin: 8px 0 28px;
+      padding: 16px 18px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: rgba(44, 62, 80, 0.04);
+      text-decoration: none;
+      border-bottom: 1px solid #e0e0e0;
+      color: inherit;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .github-card:hover {
+      border-color: #2c3e50;
+      background: rgba(44, 62, 80, 0.07);
+      border-bottom-color: #2c3e50;
+    }
+
+    .github-card-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      margin-top: 2px;
+      color: #1a1a1a;
+    }
+
+    .github-card-body {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .github-card-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 4px;
+    }
+
+    .github-card-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+
+    .github-card-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .github-card-cta {
+      flex-shrink: 0;
+      align-self: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2c3e50;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 520px) {
+      .github-card {
+        flex-wrap: wrap;
+      }
+
+      .github-card-cta {
+        width: 100%;
+        margin-left: 42px;
+        margin-top: 4px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <a href="../" class="back-link">← Back to blog</a>
+
+    <article>
+      <div class="post-header">
+        <h1>vllm-ios: 88% Faster Multi-Agent Inference on iOS</h1>
+        <div class="post-date">August 24, 2026</div>
+      </div>
+
+      <div class="post-content">
+        <p class="tldr">
+          <span class="tldr-label">TL;DR:</span>
+          I improved multi-agent batching on iOS by implementing vLLM-style continuous batching in native Swift on MLX.
+        </p>
+
+        <p>
+          I've written a lot about <a href="agent-swarms-are-great-for-local-ai.html">the tokenomics of local LLMs and agent swarms</a>. The short version: every forward pass uses the same memory bandwidth whether you're decoding one stream or eight, so concurrent agent work should share a batch. I ported vLLM's continuous-batching architecture to pure Swift for iOS — <a href="https://github.com/jonready/vllm-ios" target="_blank" rel="noopener">vllm-ios</a>, native on MLX, 88% faster than llama.cpp at 8 concurrent streams with identical weights.
+        </p>
+
+        <a class="github-card" href="https://github.com/jonready/vllm-ios" target="_blank" rel="noopener">
+          <svg class="github-card-icon" viewBox="0 0 16 16" aria-hidden="true">
+            <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <div class="github-card-body">
+            <div class="github-card-label">Open source</div>
+            <div class="github-card-title">jonready/vllm-ios</div>
+            <p class="github-card-desc">vLLM-style continuous batching for iPhone. Native Swift on MLX, no Python.</p>
+          </div>
+          <span class="github-card-cta">View on GitHub →</span>
+        </a>
+
+        <div class="demo-row">
+          <div>
+            <video src="../../files/swarmbench_demo.mp4" poster="../../files/swarmbench_demo_poster.jpg"
+                   autoplay muted loop playsinline controls></video>
+            <div class="demo-caption">One question, one batch, one phone.</div>
+          </div>
+          <div class="demo-text">
+            <p>
+              The end result first. SwarmBench, the repo's demo app: one question fans out to eight specialist agents (key facts, plan, risks, contrarian, and so on), all answering at once.
+            </p>
+            <p>
+              Every card you see streaming is a row in a single batched decode:
+            </p>
+            <ul>
+              <li>All eight agents share one weight read per token</li>
+              <li>The shared prompt prefix is prefilled once, cached, and reused</li>
+              <li>Tokens stream to each card as they materialize</li>
+              <li>Agents finish independently and exit the batch early</li>
+            </ul>
+            <p>
+              In this clip: 8 agents, 385 tokens, 2.9 seconds, on the phone's silicon alone. The rest of this post is how the engine behind it got built, and the benchmarks it exists to win.
+            </p>
+          </div>
+        </div>
+
+        <p>
+          To be clear, 8 subagents answering the same question isn't terribly useful, but it demonstrates the multi-agent inference performance that other workflows can leverage: agents each reading a different document, map-reduce over a corpus, a planner and its critics running side by side, speculative branches you throw away. The benchmarks below use exactly that shape: my travel app's research agents, each reading a different 1,000-token blog excerpt and extracting ~128 tokens of structured JSON.
+        </p>
+
+        <h2>Batched inference on iOS is surprisingly bad</h2>
+
+        <p>
+          The two serious runtimes fail in opposite ways. MLX has the fastest kernels but no multi-sequence serving on iOS — one stream per model. (Python mlx-lm has batching; a Swift port has been <a href="https://github.com/ml-explore/mlx-swift-lm/pull/263" target="_blank" rel="noopener">stuck in review since May</a>.) llama.cpp has excellent continuous batching, but its Metal kernels barely reward it on A-series silicon. Measured with Qwen3.5-0.8B, greedy decoding, on an iPhone 16 Pro, thermally controlled:
+        </p>
+
+        <table class="bench">
+          <thead>
+            <tr>
+              <th>Runtime, 4-bit</th>
+              <th>1 stream</th>
+              <th>8 streams (aggregate)</th>
+              <th>Speedup</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>llama.cpp (Q4_K_M)</td>
+              <td>54 tok/s</td>
+              <td>78 tok/s</td>
+              <td>1.4x</td>
+            </tr>
+            <tr>
+              <td>MLX (stock)</td>
+              <td>103 tok/s</td>
+              <td>n/a — no batching</td>
+              <td>1.0x</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          A 1.4x return on 8x the parallelism, or none at all. The same idea on a Mac (<a href="https://arxiv.org/abs/2601.19139" target="_blank" rel="noopener">vllm-mlx</a>) gets 4.3x at 16 requests.
+        </p>
+
+        <h2>iphones get hot fast</h2>
+
+        <p>
+          On iOS you want inference over as soon as possible. A full-tilt GPU pulls ~10 watts, heats the phone, drains the battery, and dies when the user backgrounds the app. I measure roughly <strong>15-20 seconds of full-speed GPU per minute</strong> before throttling — a 20-25 second burst takes the phone from cool to throttled. That's the real argument for batching: sixteen requests in one 25-second burn fit a single thermal budget; poor concurrency burns two or three, with later requests throttled.
+        </p>
+
+        <figure class="post-inline-figure">
+          <img src="../../img/iphone_on_ice.jpg" alt="An iPhone running an LLM benchmark while lying on an ice pack.">
+          <figcaption>State-of-the-art mobile inference cooling ice pack.</figcaption>
+        </figure>
+
+        <h2>So I rewrote vLLM's scheduler in Swift</h2>
+
+        <p>
+          Fast kernels with no scheduler (MLX), or a great scheduler with slow kernels (llama.cpp). Kernels are hard; schedulers are a few hundred lines. Easy call. <a href="https://github.com/jonready/vllm-ios" target="_blank" rel="noopener">The engine</a> is ~300 lines of Swift on <a href="https://github.com/ml-explore/mlx-swift-lm" target="_blank" rel="noopener">mlx-swift-lm</a>: requests join at token boundaries, finished ones exit immediately, stock kernels underneath. The trick that avoids touching model code is <strong>uniform-offset batching</strong> — every sequence shares the same KV offset so the stock causal mask works. Late arrivals get left-padded, prefilled solo, then spliced in by KV cache surgery on the public API. With greedy decoding, several steps chain into one lazy on-GPU graph so you sync once per chunk instead of per token.
+        </p>
+
+        <h2>What the phone can actually do</h2>
+
+        <p>
+          With a real scheduler on the fast kernels, scaling shows up (thermally clean, zero measurable scheduling overhead):
+        </p>
+
+        <table class="bench">
+          <thead>
+            <tr>
+              <th>Batch size</th>
+              <th>Per-stream</th>
+              <th>Aggregate decode</th>
+              <th>Speedup</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>103 tok/s</td>
+              <td>103 tok/s</td>
+              <td>1.0x</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>84 tok/s</td>
+              <td>168 tok/s</td>
+              <td>1.6x</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>25 tok/s</td>
+              <td>199 tok/s</td>
+              <td>1.9x</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          At 8-bit the gap widens: 51 → 169 tok/s (3.3x) vs llama.cpp's 45 → 90 (2.0x) on identical weights. Batch 2 is the sweet spot — 84% of max aggregate while each stream stays 3.4x faster than at batch 8. And for this prefill-heavy workload, wall-clock barely moves with batch size (26.6s at B=2 vs 25.2s at B=8); small batches just return the first result sooner.
+        </p>
+
+        <p>
+          An aside worth pulling out: across everything we measured, quantization and batching are the two levers that actually matter for local inference speed, and they're the same lever twice. Decode is memory-bandwidth-bound, so quantization shrinks the bytes every token must stream (8-bit → 4-bit took single-stream from 51 to 103 tok/s, tracking file size almost exactly), and batching splits those bytes across streams (103 → 199 aggregate at batch 8). They multiply: 51 → 199 tok/s, a 3.9x swing on the same silicon, from just those two knobs. Everything else we tuned — flash attention, KV layouts, chunk sizes, sync elimination — moved the numbers by single-digit percentages.
+        </p>
+
+        <p>
+          Bottom line: <strong>16 research requests, ~17k prompt tokens in and 2k tokens of JSON out, in 25 seconds, thermally stable</strong>. The llama.cpp baseline needed 47 seconds for half as many requests — two thermal budgets instead of one.
+        </p>
+
+        <h2>The scoreboard</h2>
+
+        <p>
+          Same phone, weight-identical 8-bit models, 1–8 concurrent streams. The gap between "batching exists" and "batching works":
+        </p>
+        <div class="viz-root" style="margin: 16px 0 8px;">
+          <div style="display:flex; gap:18px; flex-wrap:wrap; font-size:13px; color:#52514e; margin-bottom:10px;">
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#2a78d6;margin-right:6px;"></span>vllm-ios</span>
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#eb6834;margin-right:6px;"></span>llama.cpp</span>
+            <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1baf7a;margin-right:6px;"></span>MLX (stock)</span>
+          </div>
+          <svg viewBox="0 0 665 280" style="width:100%;height:auto;" role="img" aria-label="Line chart of aggregate decode throughput versus concurrent streams for weight-identical 8-bit models. vllm-ios rises from 51 to 169 tokens per second at 8 streams, 88 percent above llama.cpp which plateaus at 90. Stock MLX stays flat at 51 with no batching.">
+            <!-- grid + y axis -->
+            <g stroke="#eeeeee" stroke-width="1">
+              <line x1="70" y1="220" x2="560" y2="220"/>
+              <line x1="70" y1="170" x2="560" y2="170"/>
+              <line x1="70" y1="120" x2="560" y2="120"/>
+              <line x1="70" y1="70" x2="560" y2="70"/>
+              <line x1="70" y1="20" x2="560" y2="20"/>
+            </g>
+            <g font-family="Inter, sans-serif" font-size="12" fill="#999999">
+              <text x="62" y="224" text-anchor="end">0</text>
+              <text x="62" y="174" text-anchor="end">50</text>
+              <text x="62" y="124" text-anchor="end">100</text>
+              <text x="62" y="74" text-anchor="end">150</text>
+              <text x="62" y="24" text-anchor="end">200</text>
+              <text x="70" y="244" text-anchor="middle">1</text>
+              <text x="233" y="244" text-anchor="middle">2</text>
+              <text x="397" y="244" text-anchor="middle">4</text>
+              <text x="560" y="244" text-anchor="middle">8</text>
+              <text x="560" y="262" text-anchor="end">concurrent streams</text>
+              <text x="70" y="8" text-anchor="start" dominant-baseline="hanging">aggregate decode tok/s</text>
+            </g>
+
+            <!-- MLX stock: flat 51 -->
+            <polyline points="70,169 233,169 397,169 560,169" fill="none" stroke="#1baf7a" stroke-width="2"/>
+            <g fill="#1baf7a" stroke="#ffffff" stroke-width="2">
+              <circle cx="70" cy="169" r="4.5"><title>MLX stock, 1 stream: 51 tok/s</title></circle>
+              <circle cx="233" cy="169" r="4.5"><title>MLX stock, 2 requests: still 51 tok/s — sequential, no batching</title></circle>
+              <circle cx="397" cy="169" r="4.5"><title>MLX stock, 4 requests: still 51 tok/s — sequential, no batching</title></circle>
+              <circle cx="560" cy="169" r="4.5"><title>MLX stock, 8 requests: still 51 tok/s — sequential, no batching</title></circle>
+            </g>
+
+            <!-- llama.cpp Q8_0: 45, 70, 87, 90 -->
+            <polyline points="70,175 233,150 397,133 560,130" fill="none" stroke="#eb6834" stroke-width="2"/>
+            <g fill="#eb6834" stroke="#ffffff" stroke-width="2">
+              <circle cx="70" cy="175" r="4.5"><title>llama.cpp Q8_0, 1 stream: 45 tok/s</title></circle>
+              <circle cx="233" cy="150" r="4.5"><title>llama.cpp Q8_0, 2 streams: 70 tok/s aggregate</title></circle>
+              <circle cx="397" cy="133" r="4.5"><title>llama.cpp Q8_0, 4 streams: 87 tok/s aggregate</title></circle>
+              <circle cx="560" cy="130" r="4.5"><title>llama.cpp Q8_0, 8 streams: 90 tok/s aggregate (2.0x)</title></circle>
+            </g>
+
+            <!-- vllm-ios 8-bit: 51, 95, 161, 169 -->
+            <polyline points="70,169 233,125 397,59 560,51" fill="none" stroke="#2a78d6" stroke-width="2"/>
+            <g fill="#2a78d6" stroke="#ffffff" stroke-width="2">
+              <circle cx="70" cy="169" r="4.5"><title>vllm-ios 8-bit, 1 stream: 51 tok/s (same MLX kernels as stock)</title></circle>
+              <circle cx="233" cy="125" r="4.5"><title>vllm-ios 8-bit, 2 streams: 95 tok/s aggregate</title></circle>
+              <circle cx="397" cy="59" r="4.5"><title>vllm-ios 8-bit, 4 streams: 161 tok/s aggregate</title></circle>
+              <circle cx="560" cy="51" r="4.5"><title>vllm-ios 8-bit, 8 streams: 169 tok/s aggregate (3.3x) — 88% faster than llama.cpp</title></circle>
+            </g>
+
+            <!-- direct end labels -->
+            <g font-family="Inter, sans-serif" font-size="13">
+              <text x="570" y="48" fill="#1a1a1a" font-weight="600">169 (+88%)</text>
+              <text x="570" y="134" fill="#52514e">90</text>
+              <text x="570" y="180" fill="#52514e">51</text>
+            </g>
+          </svg>
+          <div style="font-size:13px; color:#999; margin-top:6px;">Qwen3.5-0.8B at 8-bit (weight-identical across engines), 8 requests per level, iPhone 16 Pro, thermally gated with 90s gaps between levels. At 4-bit the absolute numbers are higher for everyone (vllm-ios: 103 single / 199 aggregate) but the quant formats differ between engines, so the 8-bit pair is the fair fight.</div>
+        </div>
+
+        <p>
+          Local AI is less hardware-limited than we think: this phone's silicon had 4x more to give than any off-the-shelf stack would extract, and every gain came from co-designing the harness with the hardware. Batching, because decode is bandwidth-bound. Bursts, because the thermal budget is 15-20 seconds a minute. Prefix caching, because agent prompts share structure. And the table is still full: kernel fusion, calibrated quants, a Neural Engine sitting idle. The phone in your pocket runs sixteen research agents in one thermal budget with <a href="https://github.com/jonready/vllm-ios" target="_blank" rel="noopener">vllm-ios</a>. The next multiple is waiting on software shaped like the silicon.
+        </p>
+      </div>
+
+      <p class="post-rss"><a href="../feed.xml">RSS feed</a> for future posts.</p>
+    </article>
+  </main>
+
+</body>
+</html>
