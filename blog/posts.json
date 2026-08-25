@@ -1,5 +1,11 @@
 [
   {
+    "title": "vllm-ios: 88% Faster Multi-Agent Inference on iOS",
+    "date": "August 24, 2026",
+    "url": "posts/continuous-batching-on-an-iphone.html",
+    "excerpt": "You get about 15-20 seconds of GPU per minute before an iPhone overheats, so every second has to do maximum work. Batched inference on iOS is surprisingly bad at that, so I rewrote vLLM's continuous batching in 300 lines of Swift. Now open source: 88% faster than llama.cpp at 8 concurrent streams."
+  },
+  {
     "title": "Agent Swarms Are Great for Local AI",
     "date": "July 21, 2026",
     "url": "posts/agent-swarms-are-great-for-local-ai.html",

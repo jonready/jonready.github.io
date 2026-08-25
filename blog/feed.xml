@@ -5,7 +5,15 @@
     <link>https://jonready.com/blog/</link>
     <description>Thoughts on building, exploring, and technology.</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Jul 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 24 Aug 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>vllm-ios: 88% Faster Multi-Agent Inference on iOS</title>
+      <link>https://jonready.com/blog/posts/continuous-batching-on-an-iphone.html</link>
+      <guid>https://jonready.com/blog/posts/continuous-batching-on-an-iphone.html</guid>
+      <pubDate>Mon, 24 Aug 2026 00:00:00 GMT</pubDate>
+      <description>You get about 15-20 seconds of GPU per minute before an iPhone overheats, so every second has to do maximum work. Batched inference on iOS is surprisingly bad at that, so I rewrote vLLM&apos;s continuous batching in 300 lines of Swift. Now open source: 88% faster than llama.cpp at 8 concurrent streams.</description>
+    </item>
 
     <item>
       <title>Agent Swarms Are Great for Local AI</title>
