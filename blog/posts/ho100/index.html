@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="../../../js/analytics.js"></script>
+  <title>Ask Maps Basic trace explorer — Jonathon Ready</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Every transcript, tool call and judge verdict for nine models on the one hundred public grounded place questions.">
+  <meta name="robots" content="noindex">
+  <link href="../../../img/favicon.ico" rel="icon">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#1a1a1a; --muted:#6b6b6b; --line:#e3e1db; --bg:#fbfaf7; --panel:#ffffff; --ok:#2a9d5c; --no:#d9534f; --warn:#8a5a14; --accent:#2c3e50; --mono:"JetBrains Mono",Menlo,Consolas,monospace; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Inter,-apple-system,sans-serif; font-size:14px; line-height:1.5; }
+    a { color:var(--accent); }
+    header { padding:14px 20px; border-bottom:1px solid var(--line); background:var(--panel); display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; }
+    header h1 { font-size:16px; margin:0; font-weight:600; }
+    header .sub { color:var(--muted); font-size:13px; }
+    .layout { display:grid; grid-template-columns:360px 1fr; min-height:calc(100vh - 60px); }
+    aside { border-right:1px solid var(--line); background:var(--panel); display:flex; flex-direction:column; }
+    .filters { padding:10px 12px; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:6px; }
+    .filters input, .filters select { font:inherit; font-size:13px; padding:5px 8px; border:1px solid var(--line); border-radius:6px; background:#fff; }
+    .filters input { flex:1 1 140px; }
+    #qlist { overflow-y:auto; flex:1; }
+    .qitem { padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; display:grid; grid-template-columns:34px 1fr; gap:8px; }
+    .qitem:hover { background:#f3f1ea; } .qitem.active { background:#eef2ff; }
+    .qitem .n { color:var(--muted); font-family:var(--mono); font-size:12px; padding-top:2px; }
+    .qitem .t { font-size:13px; }
+    .qitem .dots { margin-top:3px; letter-spacing:2px; font-size:12px; }
+    .ok { color:var(--ok); } .no { color:var(--no); } .na { color:#bbb; }
+    main { padding:18px 24px 60px; max-width:1100px; }
+    .q { font-size:17px; font-weight:500; margin:0 0 6px; }
+    .gold { color:var(--muted); font-size:13px; margin-bottom:14px; }
+    .gold a { color:var(--accent); }
+    .models { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 16px; }
+    .mchip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:4px 10px; font-size:12.5px; cursor:pointer; display:inline-flex; gap:6px; align-items:center; }
+    .mchip.active { border-color:var(--accent); background:#eef2ff; }
+    .verdicts { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 0 18px; }
+    .vbox { border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:#fff; }
+    .vbox h3 { margin:0 0 6px; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    .vbox .res { font-weight:600; margin-bottom:4px; }
+    .vbox .reason { font-size:13px; }
+    .vbox .mech { font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-top:6px; white-space:pre-wrap; }
+    .meta { font-family:var(--mono); font-size:12px; color:var(--muted); margin-bottom:14px; display:flex; flex-wrap:wrap; gap:14px; }
+    .msg { border-left:3px solid var(--line); padding:6px 12px; margin:0 0 10px; }
+    .msg.user { border-color:#6366f1; } .msg.assistant { border-color:#2a9d5c; } .msg.tool { border-color:#c9a227; }
+    .msg .role { font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+    .msg pre { font-family:var(--mono); font-size:12px; white-space:pre-wrap; word-break:break-word; margin:4px 0; background:#f7f6f1; padding:8px 10px; border-radius:6px; max-height:260px; overflow:auto; }
+    .msg pre.open { max-height:none; }
+    .msg .call { font-family:var(--mono); font-size:12.5px; background:#eef7f1; padding:6px 10px; border-radius:6px; margin:4px 0; }
+    .msg .final { white-space:pre-wrap; }
+    .toggle { font-size:12px; color:var(--accent); cursor:pointer; background:none; border:none; padding:0; }
+    details.sys { margin:0 0 14px; } details.sys summary { cursor:pointer; color:var(--muted); font-size:13px; }
+    .compare { margin-top:24px; border-top:1px solid var(--line); padding-top:14px; }
+    .compare h2 { font-size:14px; margin:0 0 10px; }
+    .cmp { display:grid; grid-template-columns:200px 1fr; gap:8px 14px; border-bottom:1px solid var(--line); padding:8px 0; font-size:13px; }
+    .cmp .name { font-weight:500; } .cmp .ans { white-space:pre-wrap; color:#333; }
+    kbd { font-family:var(--mono); font-size:11px; border:1px solid var(--line); border-radius:4px; padding:0 4px; background:#fff; }
+    @media (max-width:800px) { .layout { grid-template-columns:1fr; } aside { max-height:40vh; } .verdicts { grid-template-columns:1fr; } .cmp { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Ask Maps Basic trace explorer</h1>
+  <span class="sub">Nine models, one hundred grounded place questions, every tool call and both judge verdicts. <a href="../rl-on-a-0_8b-travel-agent.html">Back to the post</a>. <kbd>j</kbd>/<kbd>k</kbd> move, <kbd>1</kbd>–<kbd>9</kbd> switch model.</span>
+</header>
+<div class="layout">
+  <aside>
+    <div class="filters">
+      <input id="search" placeholder="search question or gold">
+      <select id="fcat"><option value="">all categories</option></select>
+      <select id="fout"><option value="">any outcome</option><option value="pass">grounding pass</option><option value="fail">grounding fail</option><option value="budget">budget kill</option><option value="noreach">never reached gold</option></select>
+    </div>
+    <div id="qlist"></div>
+  </aside>
+  <main id="main"><p class="sub">Loading…</p></main>
+</div>
+<script>
+(function(){
+  var bank=[], models=[], data={}, cur={q:null,m:null}, order=[];
+  var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");};
+  var dot=function(v){return v===true?'<span class="ok">●</span>':v===false?'<span class="no">○</span>':'<span class="na">–</span>';};
+  function osm(ref){return "https://www.openstreetmap.org/"+({N:"node",W:"way",R:"relation"}[ref[0]])+"/"+ref.slice(1);}
+  function loadJSON(p){return fetch(p).then(function(r){return r.json();});}
+  Promise.all([loadJSON("data/bank.json"),loadJSON("data/models.json")]).then(function(res){
+    bank=res[0]; models=res[1]; order=models.map(function(m){return m.key;});
+    var cats={}; bank.forEach(function(q){cats[q.category]=1;});
+    Object.keys(cats).sort().forEach(function(c){var o=document.createElement("option");o.value=c;o.textContent=c;document.getElementById("fcat").appendChild(o);});
+    var h=location.hash.replace(/^#/,"").split("&").reduce(function(a,kv){var p=kv.split("=");if(p[0])a[p[0]]=decodeURIComponent(p[1]||"");return a;},{});
+    cur.m=h.m&&order.indexOf(h.m)>=0?h.m:order[0]; cur.q=h.q||bank[0].id;
+    renderList(); show();
+  });
+  function visible(){
+    var s=document.getElementById("search").value.toLowerCase(), c=document.getElementById("fcat").value, o=document.getElementById("fout").value;
+    var m=models.filter(function(x){return x.key===cur.m;})[0];
+    return bank.filter(function(q){
+      if(c&&q.category!==c) return false;
+      if(s&&(q.question+" "+q.gold.name).toLowerCase().indexOf(s)<0) return false;
+      if(o&&m){var v=m.per_q[q.id]||[]; if(o==="pass"&&v[0]!==true)return false; if(o==="fail"&&v[0]!==false)return false; if(o==="budget"&&(v[3]==null||v[3]==="ok"))return false; if(o==="noreach"&&v[2]!==false)return false;}
+      return true;});
+  }
+  function renderList(){
+    var list=document.getElementById("qlist"); list.innerHTML="";
+    visible().forEach(function(q){
+      var d=document.createElement("div"); d.className="qitem"+(q.id===cur.q?" active":""); d.dataset.id=q.id;
+      var dots=models.map(function(m){var v=m.per_q[q.id]||[];return '<span title="'+esc(m.name)+'">'+dot(v[0])+'</span>';}).join("");
+      d.innerHTML='<div class="n">'+(bank.indexOf(q)+1)+'</div><div><div class="t">'+esc(q.question)+'</div><div class="dots">'+dots+'</div></div>';
+      d.onclick=function(){cur.q=q.id; show();};
+      list.appendChild(d);});
+  }
+  function ensure(key){ if(data[key]) return Promise.resolve(data[key]); return loadJSON("data/"+key+".json").then(function(j){data[key]=j; return j;}); }
+  function show(){
+    location.hash="q="+cur.q+"&m="+cur.m;
+    Array.prototype.forEach.call(document.querySelectorAll(".qitem"),function(el){el.classList.toggle("active",el.dataset.id===cur.q);});
+    var act=document.querySelector(".qitem.active"); if(act) act.scrollIntoView({block:"nearest"});
+    var q=bank.filter(function(x){return x.id===cur.q;})[0]; if(!q) return;
+    ensure(cur.m).then(function(md){
+      var row=md.rows.filter(function(r){return r.id===cur.q;})[0];
+      var chips=models.map(function(m,i){var v=m.per_q[q.id]||[];return '<span class="mchip'+(m.key===cur.m?" active":"")+'" data-m="'+m.key+'"><b>'+(i+1)+'</b> '+esc(m.name)+' '+dot(v[0])+'</span>';}).join("");
+      var html='<p class="q">'+esc(q.question)+'</p>'
+        +'<div class="gold">Gold: <b>'+esc(q.gold.name)+'</b> ('+esc(q.gold.type)+') · '+q.gold.refs.map(function(r){return '<a href="'+osm(r)+'" target="_blank" rel="noopener">'+r+'</a>';}).join(", ")+' · source: <a href="'+esc(q.source.url)+'" target="_blank" rel="noopener">'+esc(q.source.title)+'</a> · '+esc(q.category)+' · '+esc(q.id)+'</div>'
+        +'<div class="models">'+chips+'</div>';
+      if(!row){ html+='<p class="sub">No run for this model.</p>'; }
+      else {
+        html+='<div class="verdicts">'+vbox("Grounding verdict",row.grounding)+vbox("Correctness verdict",row.default)+'</div>'
+          +'<div class="meta"><span>protocol: '+esc(row.protocol)+'</span><span>tool calls: '+esc(row.n_tools)+'</span><span>reached gold: '+(row.reached?"yes":"no")+'</span>'+(row.mech&&row.mech.anchor_first_km!=null?'<span>first anchor '+row.mech.anchor_first_km+' km from gold</span>':'')+(row.usage?'<span>tokens '+esc(row.usage.prompt||"?")+' in / '+esc(row.usage.completion||"?")+' out</span>':'')+'</div>'
+          +'<details class="sys"><summary>System prompt ('+(md.system_prompt||"").length+' chars, identical for every question)</summary><pre style="font-family:var(--mono);font-size:12px;white-space:pre-wrap;background:#f7f6f1;padding:10px;border-radius:6px">'+esc(md.system_prompt)+'</pre></details>';
+        row.messages.forEach(function(m){
+          var body="";
+          if(m.tool_calls) m.tool_calls.forEach(function(tc){var a=tc.arguments;try{a=JSON.stringify(JSON.parse(a));}catch(e){} body+='<div class="call">'+esc(tc.name)+'('+esc(a)+')</div>';});
+          if(m.role==="tool") body+='<pre>'+esc(m.content)+'</pre><button class="toggle">expand</button>';
+          else if(m.content) body+='<div class="final">'+esc(m.content)+'</div>';
+          html+='<div class="msg '+m.role+'"><div class="role">'+m.role+'</div>'+body+'</div>';
+        });
+      }
+      html+='<div class="compare"><h2>Every model\'s final answer for this question</h2><div id="cmp"><span class="sub">Loading…</span></div></div>';
+      var main=document.getElementById("main"); main.innerHTML=html; main.scrollTop=0;
+      Array.prototype.forEach.call(main.querySelectorAll(".mchip"),function(el){el.onclick=function(){cur.m=el.dataset.m; renderList(); show();};});
+      Array.prototype.forEach.call(main.querySelectorAll(".toggle"),function(b){b.onclick=function(){var p=b.previousElementSibling;p.classList.toggle("open");b.textContent=p.classList.contains("open")?"collapse":"expand";};});
+      Promise.all(order.map(ensure)).then(function(all){
+        var out=all.map(function(m){var r=m.rows.filter(function(x){return x.id===cur.q;})[0]; if(!r) return ""; return '<div class="cmp"><div class="name">'+esc(m.name)+'<br>'+dot(r.grounding&&r.grounding.pass)+' grounding · '+dot(r.default&&r.default.pass)+' correctness · '+esc(r.n_tools)+' calls'+(r.protocol!=="ok"?' · <span class="no">'+esc(r.protocol)+'</span>':'')+'</div><div class="ans">'+esc(r.final||"(no final answer)")+'</div></div>';}).join("");
+        var c=document.getElementById("cmp"); if(c) c.innerHTML=out;
+      });
+    });
+  }
+  function vbox(title,v){ if(!v) return '<div class="vbox"><h3>'+title+'</h3><div class="res na">not judged</div></div>';
+    var flags=v.mech?Object.keys(v.mech).filter(function(k){var x=v.mech[k];return x&&!(Array.isArray(x)&&!x.length);}).map(function(k){return k+": "+JSON.stringify(v.mech[k]);}).join("\n"):"";
+    return '<div class="vbox"><h3>'+title+(v.judge?' · '+esc(v.judge):'')+'</h3><div class="res '+(v.pass?"ok":"no")+'">'+(v.pass?"PASS":"FAIL")+'</div><div class="reason">'+esc(v.reason)+'</div>'+(flags?'<div class="mech">'+esc(flags)+'</div>':'')+'</div>'; }
+  ["search","fcat","fout"].forEach(function(id){document.getElementById(id).addEventListener("input",renderList);});
+  document.addEventListener("keydown",function(e){
+    if(e.target.tagName==="INPUT"||e.target.tagName==="SELECT") return;
+    var vis=visible().map(function(q){return q.id;}), i=vis.indexOf(cur.q);
+    if(e.key==="j"&&i<vis.length-1){cur.q=vis[i+1];show();}
+    else if(e.key==="k"&&i>0){cur.q=vis[i-1];show();}
+    else if(/^[1-9]$/.test(e.key)&&order[+e.key-1]){cur.m=order[+e.key-1];renderList();show();}
+  });
+})();
+</script>
+</body>
+</html>

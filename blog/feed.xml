@@ -5,7 +5,15 @@
     <link>https://jonready.com/blog/</link>
     <description>Thoughts on building, exploring, and technology.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 24 Aug 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 13 Oct 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>topoloop Finch: an offline 0.8B model that answers questions over OpenStreetMap as well as Gemini 3.8 Flash</title>
+      <link>https://jonready.com/blog/posts/rl-on-a-0_8b-travel-agent.html</link>
+      <guid>https://jonready.com/blog/posts/rl-on-a-0_8b-travel-agent.html</guid>
+      <pubDate>Tue, 13 Oct 2026 00:00:00 GMT</pubDate>
+      <description>I trained a 0.8B model to do Ask Maps over OpenStreetMap, offline, on three 3090s. It ties Gemini 3.8 Flash on Ask Maps Basic, a new open eval of 100 traveller questions, with every trace published. Weights, environment and eval are open.</description>
+    </item>
 
     <item>
       <title>vllm-ios: 88% Faster Multi-Agent Inference on iOS</title>
