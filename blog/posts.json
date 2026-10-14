@@ -1,6 +1,6 @@
 [
   {
-    "title": "topoloop Finch: an offline 0.8B model that answers questions over OpenStreetMap as well as Gemini 3.8 Flash",
+    "title": "Finch: an offline 0.8B model that ties Gemini Flash on OpenStreetMap",
     "date": "October 13, 2026",
     "url": "posts/rl-on-a-0_8b-travel-agent.html",
     "excerpt": "I trained a 0.8B model to do Ask Maps over OpenStreetMap, offline, on three 3090s. It ties Gemini 3.8 Flash on Ask Maps Basic, a new open eval of 100 traveller questions, with every trace published. Weights, environment and eval are open."
