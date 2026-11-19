@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="cdnsearch-globe.svg">
+<title>cdnsearch · Search travel writing</title>
+<style>
+:root { color-scheme:light; font:16px/1.45 Arial,Helvetica,sans-serif; color:#202124; --gutter:clamp(140px,11vw,160px); --blue:#174ea6 }
+* { box-sizing:border-box }
+body { margin:0; background:#fff }
+header { border-bottom:1px solid #e2e4e7; padding:20px 20px 18px; display:flex; align-items:center; gap:22px }
+h1 { margin:0; width:calc(var(--gutter) - 42px); min-width:92px; font-size:22px; letter-spacing:-1.2px; font-weight:650 }
+main,form { width:min(688px,calc(100% - var(--gutter) - 24px)) }
+main { margin:18px 0 64px var(--gutter) }
+form { display:flex; align-items:center; border:1px solid #c8ccd2; border-radius:26px; height:46px; overflow:hidden }
+form:focus-within { border-color:#91addd; box-shadow:0 1px 5px #20305020 }
+input,button { font:inherit }
+input[type=search] { flex:1; width:0; padding:10px 0 10px 18px; border:0; outline:none; background:transparent; color:inherit }
+button,summary { cursor:pointer }
+#go { border:0; background:transparent; padding:9px 17px; color:var(--blue); font-weight:600; font-size:14px }
+button:disabled { opacity:.6; cursor:wait }
+button:focus-visible,summary:focus-visible,a:focus-visible { outline:2px solid var(--blue); outline-offset:2px }
+.setup,.status,details { font-size:13px; color:#565b63 }
+.setup { margin:0 0 14px }
+.setup button,.examples button { color:var(--blue); padding:0; border:0; background:transparent; text-decoration:underline; text-underline-offset:2px }
+#cancel { margin-left:8px }
+progress { display:block; width:min(280px,100%); margin:6px 0; accent-color:var(--blue) }
+#feedback:not(:empty) { display:block; margin-top:3px }
+.status { margin:0 0 16px }
+.r { margin:0 0 25px }
+.r .d { font-size:13px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis }
+.r .t { display:block; width:fit-content; font-size:20px; line-height:1.28; color:#1a0dab; text-decoration:none; margin:3px 0 4px; overflow-wrap:anywhere }
+.r .t:visited { color:#681da8 }
+.r .t:hover { text-decoration:underline }
+.r .s { font-size:14px; line-height:1.55; color:#42464c; margin:0; overflow-wrap:anywhere }
+h2 { margin:0 0 8px; font-size:17px; font-weight:500 }
+.examples { display:flex; flex-wrap:wrap; gap:8px 20px }
+.examples button { font-size:14px; text-align:left }
+details { margin:14px 0 }
+summary { width:fit-content }
+.controls { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin:9px 0 }
+.controls label { display:flex; align-items:center; gap:5px }
+.controls input[type=range] { width:70px }
+.stats { overflow:auto }
+.stats td { padding:4px 12px 4px 0; vertical-align:top }
+[hidden] { display:none!important }
+@media(max-width:800px) { header { padding:14px 16px; flex-wrap:wrap; gap:8px } h1 { width:auto } main,form { width:calc(100% - 32px) } main { margin:16px auto 48px } form { width:100% } }
+h1 { display:flex; align-items:center; gap:.13em; min-width:max-content; font-weight:500; letter-spacing:-.072em; line-height:1.12 }
+.globe { display:block; flex:none; width:.76em; height:.76em }
+#start { color:white; background:#174ea6; text-decoration:none; padding:7px 14px; border-radius:5px }
+body.home header { flex-direction:column; justify-content:center; border:0; gap:30px; padding:clamp(62px,23vh,220px) 18px 0 }
+.home h1 { width:auto; min-width:0; font-size:clamp(52px,9vw,90px) }
+.wordmark span:nth-child(3n+1) { color:#4285f4 }
+.wordmark span:nth-child(3n+2) { color:#ea4335 }
+.wordmark span:nth-child(3n) { color:#fbbc05 }
+.wordmark span:nth-child(5),.wordmark span:last-child { color:#34a853 }
+.home form { width:min(584px,100%); height:48px; border-color:#d5d8dc; box-shadow:0 1px 4px #20212417 }
+.lens { flex:none; width:14px; height:14px; border:1.8px solid #4285f4; border-radius:50%; position:relative; margin-left:19px }
+.lens::after { content:""; position:absolute; width:7px; height:2px; background:#4285f4; right:-5px; bottom:-2px; transform:rotate(45deg) }
+.home #go:disabled { visibility:hidden }
+body.home main { width:min(584px,calc(100% - 36px)); margin:22px auto 48px; text-align:center }
+.home #start,.home #cancel { padding:9px 17px; background:#f8f9fa; border:1px solid #dadce0; border-radius:4px; color:#202124; text-decoration:none; font-size:14px }
+.home #start:hover,.home #cancel:hover { background:#f1f3f4 }
+#intro { max-width:48ch; margin:0 auto 16px }
+#intro p { margin:0 }
+#intro p:first-child { font-size:18px; color:#202124; margin-bottom:4px }
+.home #explain { display:block; margin:0 auto 16px; line-height:1.6 }
+.home #start { background:#1a73e8; border-color:#1a73e8; color:white; font-weight:600 }
+.home #start:hover { background:#155fc3 }
+.home progress { margin:12px auto }
+.home .examples,.home .controls { justify-content:center }
+.home summary { margin:auto }
+</style>
+</head>
+<body class="home">
+<header>
+<h1><img class="globe" src="cdnsearch-globe.svg" alt=""><span class="wordmark" aria-label="cdnsearch"><span>c</span><span>d</span><span>n</span><span>s</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span></span></h1>
+<form hidden id="f" role="search"><span class="lens" aria-hidden="true"></span><input disabled id="q" type="search" aria-label="Search this collection of travel writing" placeholder="Search this collection of travel writing" maxlength="2000" autocomplete="off" required><button disabled id="go">Search</button></form>
+</header>
+<main>
+<div class="setup" aria-label="Live search setup">
+<div id="intro"><p>Search a collection of travel writing</p><p>Explore 3.5 million passages from about 295,000 travel pages. This proof of concept runs semantic search in your browser using a static index served by a CDN.</p></div>
+<span id="explain">Arctic Large 8-bit is a 288 MB download. First-time setup uses about 340 MB in total.</span>
+<button id="start" type="button" aria-describedby="explain">Load model</button><button id="cancel" type="button" hidden>Cancel</button>
+<progress id="progress" max="100" hidden aria-label="Model download progress"></progress><span id="feedback" role="status"></span>
+</div>
+<p class="status" id="status" role="status"></p>
+<div id="results" aria-label="Search results"></div>
+<section hidden id="examples"><h2>Suggested searches</h2><div id="ex" class="examples"></div></section>
+<details id="options" hidden><summary>Search settings</summary><div class="controls">
+<label>Lists to probe <input id="nprobe" type="range" min="2" max="32" value="13"><output id="nprobe_v">13</output></label>
+<label>Results <input id="k" type="range" min="5" max="20" value="10"><output id="k_v">10</output></label>
+<label><input id="dedupe" type="checkbox" checked> One result per page</label>
+</div></details>
+<details id="timings" hidden><summary>Search timings</summary><div class="stats" id="stats"></div></details>
+</main>
+<script type="module">
+const BASE = 'https://tiles.wanderfugl.com/cdnsearch/';
+const indexURL = new URL('index-l-compact/', new URL(document.documentElement.dataset.indexBase || BASE, location.href)).href;
+let model = 'arctic-l-q8-travel';
+const modelURL = name => BASE + 'models/' + name + '/onnx/model_quantized.onnx';
+let modelBytes = 287736556;
+const $ = id => document.getElementById(id);
+const fmtB = b => b >= 1e6 ? (b/1e6).toFixed(2)+' MB' : b >= 1e3 ? (b/1e3).toFixed(0)+' KB' : b+' B';
+const ms = t => t.toFixed(0)+' ms';
+let meta, cents, dir, L, D;
+const downloadExplanation = $('explain').textContent;
+let phase = 'preview';
+// Chrome can serialize concurrent ranges on the same URL behind its HTTP cache lock.
+// Keep recently used immutable ranges in the tab while letting independent reads overlap.
+const rangeCache = new Map();
+const rangeBudget = 16 * 1024 * 1024;
+let resident = 0;
+async function read(url, stats, start, end) {
+  const partial = start !== undefined;
+  const key = partial && url + ':' + start + '-' + end;
+  if (partial && rangeCache.has(key)) {
+    const buf = rangeCache.get(key);
+    rangeCache.delete(key);
+    rangeCache.set(key, buf);
+    return buf;
+  }
+  const options = partial ? { cache: 'no-store', headers: { Range: `bytes=${start}-${end}` } } : {};
+  const res = await fetch(url, options);
+  if (!res.ok) throw Error(`HTTP ${res.status} reading ${url}`);
+  let buf = await res.arrayBuffer();
+  stats.bytes += buf.byteLength;
+  stats.requests++;
+  if (partial) {
+    if (res.status === 200) buf = buf.slice(start, end + 1);
+    if (buf.byteLength !== end - start + 1) throw Error('Incomplete index range');
+    if (buf.byteLength <= rangeBudget && !rangeCache.has(key)) {
+      while (resident + buf.byteLength > rangeBudget) {
+        const oldest = rangeCache.keys().next().value;
+        resident -= rangeCache.get(oldest).byteLength;
+        rangeCache.delete(oldest);
+      }
+      rangeCache.set(key, buf);
+      resident += buf.byteLength;
+    }
+  }
+  return buf;
+}
+
+async function readList(li, stats) {
+  const m = dir.getUint32(li * 16 + 8, true);
+  if (!m) return { li, m };
+  const prefix = indexURL + 'tiles/' + li, pos = 8*m + 4;
+  const buf = await read(prefix + '.head', stats);
+  return { li, m, off: 0, url: prefix + '.records', rows: new Uint32Array(buf, 0, m),
+    soff: new Uint32Array(buf, 4*m, m+1), bias: new Float32Array(buf, pos, D),
+    step: new Float32Array(buf, pos+4*D, D), codes: new Uint8Array(buf, pos+8*D) };
+}
+
+function dot(q, values, offset = 0) {
+  let sum = 0;
+  for (let d = 0; d < D; d++) sum += q[d] * values[offset + d];
+  return sum;
+}
+
+function scoreList(q, h, candidates) {
+  if (!h.m) return;
+  // Four 2-bit coordinates per byte. Precompute each byte's contribution once per list.
+  const stride = D / 4, table = new Float32Array(stride * 256);
+  const weighted = q.map((value, d) => value * h.step[d]);
+  for (let d = 0; d < stride; d++) {
+    for (let code = 0; code < 256; code++) {
+      let sum = 0;
+      for (let k = 0; k < 4; k++) sum += weighted[4*d+k] * ((code >> (2*k)) & 3);
+      table[d*256+code] = sum;
+    }
+  }
+  const bias = dot(q, h.bias);
+  for (let j = 0; j < h.m; j++) {
+    let score = bias;
+    for (let d = 0; d < stride; d++) score += table[256*d + h.codes[j*stride+d]];
+    candidates.push({ score, h, j });
+  }
+}
+async function loadIndex(signal) {
+  if (dir) return;
+  async function file(name) {
+    const response = await fetch(indexURL + name, { signal });
+    if (!response.ok) throw Error(`The search directory is unavailable (HTTP ${response.status}).`);
+    return response;
+  }
+  const manifest = await (await file('meta.json')).json();
+  if (manifest.model !== 'Snowflake/snowflake-arctic-embed-l-v2.0' || manifest.dim !== 1024 ||
+      manifest.version !== 2 || manifest.layout !== 'compact') throw Error('The Arctic Large index is unavailable.');
+  const [centroids, directory] = await Promise.all(['centroids.i8','lists.dir'].map(async name => (await file(name)).arrayBuffer()));
+  if (centroids.byteLength !== manifest.lists * manifest.dim || directory.byteLength !== manifest.lists * 16) {
+    throw Error('The search directory download was incomplete.');
+  }
+  meta = manifest; D = meta.dim; L = meta.lists;
+  cents = new Int8Array(centroids); dir = new DataView(directory);
+}
+
+let cachedWeights = false;
+async function checkCache() {
+  try {
+    const options = { cacheName: 'transformers-cache' };
+    const packed = await caches.match(modelURL('arctic-l-q8-travel'), options);
+    const legacy = !packed && await caches.match(modelURL('arctic-l'), options);
+    if (phase !== 'preview') return;
+    model = legacy ? 'arctic-l' : 'arctic-l-q8-travel';
+    modelBytes = legacy ? 569721975 : 287736556;
+    cachedWeights = !!(packed || legacy);
+  } catch { cachedWeights = false; }
+  if (phase === 'preview' && cachedWeights) {
+    $('explain').textContent = 'Arctic Large 8-bit is saved in this browser.';
+    $('start').textContent = 'Load model';
+  }
+}
+
+let worker, pending, setupController;
+function callWorker(data) {
+  return new Promise((resolve, reject) => {
+    pending = { resolve, reject };
+    worker.postMessage(data);
+  });
+}
+
+function stopWorker(reason) {
+  worker?.terminate();
+  worker = null;
+  pending?.reject(reason);
+  pending = null;
+}
+
+function showDownloadChoice() {
+  $('explain').textContent = downloadExplanation;
+  $('start').textContent = 'Load model';
+}
+
+async function start() {
+  if (phase !== 'preview') return;
+  phase = 'loading';
+  $('go').disabled = true;
+  setupController = new AbortController();
+  const signal = setupController.signal;
+  $('start').disabled = true;
+  $('start').textContent = 'Setting up…';
+  $('cancel').hidden = $('progress').hidden = false;
+  $('progress').removeAttribute('value');
+  $('feedback').textContent = 'Opening the search directory…';
+  try {
+    await loadIndex(signal);
+    signal.throwIfAborted();
+    $('feedback').textContent = 'Loading the tokenizer and model…';
+    worker = new Worker(new URL('arctic-q8-worker.js?v=travel-q8', location.href), { type: 'module' });
+    worker.onerror = event => {
+      stopWorker(new Error(event.message || 'The model worker stopped.'));
+      if (phase === 'ready') {
+        phase = 'preview';
+        $('options').hidden = $('timings').hidden = true;
+        $('start').hidden = $('start').disabled = false;
+        showDownloadChoice();
+        $('feedback').textContent = 'The search engine stopped. Restart it here.';
+        document.body.classList.add('home');
+        $('f').hidden = $('q').disabled = $('examples').hidden = true;
+        $('intro').hidden = false;
+        $('results').replaceChildren();
+        $('status').textContent = '';
+        checkCache();
+      }
+    };
+    worker.onmessage = ({ data }) => {
+      if (data.type === 'progress') {
+        const loaded = Math.min(data.loaded, modelBytes);
+        $('progress').value = Math.floor(100 * loaded / modelBytes);
+        $('feedback').textContent = `${cachedWeights ? 'Reading saved model' : 'Loading model'} · ${Math.round(loaded/1e6)} of ${Math.round(modelBytes/1e6)} MB (${$('progress').value}%)`;
+      } else if (data.type === 'preparing') {
+        $('progress').removeAttribute('value');
+        $('feedback').textContent = 'Preparing the search engine on your device…';
+      } else if (pending) {
+        const request = pending;
+        pending = null;
+        if (data.type === 'error') request.reject(new Error(data.message));
+        else request.resolve(data.vector);
+      }
+    };
+    await callWorker({ type: 'load', model, modelBase: BASE + 'models/', prefix: meta.query_prefix,
+      dim: D, modelBytes, saved: cachedWeights });
+    phase = 'ready';
+    $('progress').hidden = $('start').hidden = $('cancel').hidden = true;
+    $('explain').textContent = 'Live search · Arctic Large 8-bit';
+    $('feedback').textContent = '';
+    $('intro').hidden = true;
+    $('f').hidden = $('q').disabled = $('examples').hidden = $('options').hidden = false;
+    $('go').disabled = false;
+    if ($('q').value.trim()) await submitSearch();
+    else $('q').focus();
+  } catch (error) {
+    stopWorker(error);
+    phase = 'preview';
+    $('progress').hidden = true; $('start').disabled = false; $('go').disabled = true;
+    if (signal.aborted) {
+      $('start').textContent = 'Load model';
+      $('feedback').textContent = 'Setup stopped.';
+    } else {
+      cachedWeights = false; model = 'arctic-l-q8-travel'; modelBytes = 287736556;
+      showDownloadChoice();
+      $('start').textContent = 'Retry setup · 288 MB download';
+      $('feedback').textContent = 'Setup could not finish. Check your connection and available browser storage, then retry.';
+      console.error(error);
+    }
+  } finally {
+    setupController = null;
+    $('cancel').hidden = true;
+  }
+}
+$('cancel').onclick = () => {
+  if (phase !== 'loading') return;
+  setupController.abort();
+  stopWorker(new DOMException('Setup stopped', 'AbortError'));
+};
+
+function showDocs(docs) {
+  const articles = [];
+  for (const doc of docs) {
+    let url;
+    try { url = new URL(doc.u); } catch { continue; }
+    if (!['http:', 'https:'].includes(url.protocol)) continue;
+    const article = document.createElement('article'); article.className = 'r';
+    if (Number.isInteger(doc.row)) article.dataset.row = String(doc.row);
+    const domain = document.createElement('div'); domain.className = 'd'; domain.textContent = url.hostname.replace(/^www\./, '') + url.pathname.replace(/\/$/, '').replaceAll('/', ' › ');
+    const title = document.createElement('a'); title.className = 't'; title.href = url.href;
+    title.target = '_blank'; title.rel = 'noopener'; title.textContent = doc.t || url.hostname;
+    const snippet = document.createElement('p'); snippet.className = 's'; const excerpt = String(doc.s || '').replace(/\*\*|(?:^|\s)#{1,6}\s+/g, ' ').replace(/\s+/g, ' ').trim();
+    snippet.textContent = excerpt.length > 280 ? excerpt.slice(0, 280).replace(/\s+\S*$/, '') + '…' : excerpt;
+    article.append(domain, title, snippet); articles.push(article);
+  }
+  $('results').replaceChildren(...articles);
+}
+
+async function embed(text) {
+  return callWorker({ type: 'embed', text });
+}
+
+function topCentroids(q, n) {
+  n = Math.min(n, L);
+  const scores = new Float32Array(n).fill(-Infinity);
+  const ids = new Int32Array(n);
+  for (let li = 0; li < L; li++) {
+    const score = Math.fround(dot(q, cents, li * D));
+    if (score <= scores[n - 1]) continue;
+    let pos = n - 1;
+    while (pos > 0 && score > scores[pos - 1]) {
+      scores[pos] = scores[pos - 1];
+      ids[pos] = ids[pos - 1];
+      pos--;
+    }
+    scores[pos] = score;
+    ids[pos] = li;
+  }
+  return Array.from(ids);
+}
+
+async function search() {
+  const text = $('q').value.trim(); if (!text) return;
+  document.body.classList.remove('home');
+  const nprobe = +$('nprobe').value, k = +$('k').value, dedupe = $('dedupe').checked;
+  $('timings').hidden = true; $('go').disabled = true; $('results').innerHTML = ''; $('stats').innerHTML = '';
+  $('status').textContent = 'embedding query…';
+  const T = {}, io = { bytes: 0, requests: 0 };
+  let t = performance.now();
+  const q = await embed(text); T.embed = performance.now() - t;
+  t = performance.now();
+  const lists = topCentroids(q, nprobe); T.route = performance.now() - t;
+  $('status').textContent = `fetching ${nprobe} lists…`;
+
+  t = performance.now();
+  const heads = await Promise.all(lists.map(li => readList(li, io)));
+  T.lists = performance.now() - t;
+  const listBytes = io.bytes, listRequests = io.requests;
+
+  t = performance.now();
+  const cand = [];
+  for (const h of heads) scoreList(q, h, cand);
+  cand.sort((a, b) => b.score - a.score); T.score = performance.now() - t;
+
+  t = performance.now();
+  const picked = [], seen = new Set(), seenRow = new Set(), want = [];
+  const shortlist = Math.max(32, 2*k);
+  for (const c of cand) {
+    if (want.length >= shortlist) break;
+    const rid = c.h.rows[c.j]; if (seenRow.has(rid)) continue; seenRow.add(rid);
+    want.push(c);
+  }
+  const decoder = new TextDecoder();
+  const hits = await Promise.all(want.map(async c => {
+    const { h, j } = c, start = h.soff[j], end = h.soff[j+1];
+    const buf = await read(h.url, io, start, end - 1);
+    const score = dot(q, new Int8Array(buf, 0, D));
+    const text = new Uint8Array(buf, D);
+    try { return { score: score / meta.scale, doc: JSON.parse(decoder.decode(text)), list: h.li, row: h.rows[j] }; }
+    catch { return null; }
+  }));
+  const ranked = hits.filter(Boolean).sort((a, b) => b.score - a.score);
+  for (const hit of ranked.slice(0, 2*k)) {
+    if (dedupe && seen.has(hit.doc.u)) continue;
+    seen.add(hit.doc.u); picked.push(hit);
+    if (picked.length === k) break;
+  }
+  const { bytes, requests: trips } = io;
+  T.snippets = performance.now() - t;
+  const total = Object.values(T).reduce((a, b) => a + b, 0);
+
+  showDocs(picked.map(hit => ({ ...hit.doc, row: hit.row })));
+  $('timings').hidden = false;
+  $('status').textContent = `${picked.length} results · ${ms(total)} · ${fmtB(bytes)} over ${trips} fetches · ${cand.length.toLocaleString()} passages scored in the browser`;
+  $('stats').innerHTML = `<table>
+    <tr><td>embed query (Arctic Large q8, WASM)</td><td>${ms(T.embed)}</td><td></td></tr>
+    <tr><td>route: score ${L.toLocaleString()} centroids</td><td>${ms(T.route)}</td><td>lists ${lists.join(', ')}</td></tr>
+    <tr><td>fetch ${nprobe} lists</td><td>${ms(T.lists)}</td><td>${fmtB(listBytes)}, ${listRequests} fetches</td></tr>
+    <tr><td>score ${cand.length.toLocaleString()} vectors</td><td>${ms(T.score)}</td><td></td></tr>
+    <tr><td>resolve ${want.length} candidates</td><td>${ms(T.snippets)}</td><td>${fmtB(bytes - listBytes)}, ${trips - listRequests} fetches</td></tr>
+    <tr><td><b>total</b></td><td><b>${ms(total)}</b></td><td>${fmtB(bytes)} this query · index directory resident: ${fmtB(cents.byteLength + dir.byteLength)}</td></tr></table>`;
+  $('go').disabled = false;
+}
+async function submitSearch() {
+  if (phase !== 'ready' || $('go').disabled) return;
+  try { await search(); }
+  catch (e) { $('status').textContent = 'Search failed: ' + e.message; }
+  finally { $('go').disabled = false; }
+}
+const suggestions = ["Best hikes near Ella, Sri Lanka", "Where to eat ramen in Tokyo", "Mountain huts in the Dolomites"];
+for (const query of suggestions) {
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.textContent = query;
+  btn.onclick = () => {
+    if (phase !== 'ready' || $('go').disabled) return;
+    $('q').value = query;
+    submitSearch();
+  };
+  $('ex').append(btn);
+}
+$('start').onclick = start;
+$('f').onsubmit = e => { e.preventDefault(); submitSearch(); };
+$('nprobe').oninput = e => $('nprobe_v').textContent = e.target.value;
+$('k').oninput = e => $('k_v').textContent = e.target.value;
+checkCache();
+</script>
+</body>
+</html>
